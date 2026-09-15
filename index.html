@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Search a curated directory of Haitian-owned businesses across the United States, Canada, France, and Haiti.">
+  <meta name="theme-color" content="#128c20">
+  <title>Haitian Global Business Directory</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+  <style>:root{--green:#128c20;--green-dark:#075d18;--field:#f7faf8;--yellow:#f0e813;--ink:#142219;--muted:#657269;--line:#dbe6de;--white:#fff;--shadow:0 20px 50px rgba(3,48,15,.12)}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;color:var(--ink);font-family:Manrope,system-ui,sans-serif;background:var(--field)}button,input,select,textarea{font:inherit}button,a{touch-action:manipulation}.site-header{height:82px;background:var(--green);display:flex;align-items:center;justify-content:space-between;padding:0 clamp(22px,5vw,78px);color:white;position:relative;z-index:5}.brand{display:flex;align-items:center;gap:12px;color:inherit;text-decoration:none}.brand b,.brand small{display:block}.brand b{font-family:"Playfair Display",serif;font-size:1.12rem;line-height:1}.brand small{font-size:.68rem;text-transform:uppercase;letter-spacing:.18em;margin-top:5px}.brand-mark{width:41px;height:41px;border:2px solid var(--yellow);border-radius:50%;display:grid;place-content:center;gap:3px;transform:rotate(-8deg)}.brand-mark i{display:block;width:22px;height:3px;border-radius:5px;background:var(--yellow)}.brand-mark i:first-child{width:12px}.brand-mark i:last-child{width:16px;margin-left:6px}.site-header nav{display:flex;align-items:center;gap:30px}.site-header nav a,.admin-link{color:white;text-decoration:none;font-weight:600;font-size:.88rem;background:none;border:0;cursor:pointer;padding:28px 0;position:relative}.site-header nav a.active:after{content:"";position:absolute;bottom:19px;left:0;right:0;height:2px;background:var(--yellow)}.admin-link{border:1px solid rgba(255,255,255,.45);padding:9px 16px;border-radius:4px}.search-stage{background:var(--green);color:white;padding:58px clamp(22px,7vw,110px) 44px;position:relative;overflow:visible}.search-stage:before{content:"";position:absolute;width:420px;height:420px;border:1px solid rgba(240,232,19,.15);border-radius:50%;right:-140px;top:-180px;box-shadow:0 0 0 70px rgba(240,232,19,.035),0 0 0 140px rgba(240,232,19,.025)}.eyebrow,.section-kicker{font-size:.72rem;letter-spacing:.17em;font-weight:800;color:var(--yellow);margin:0 0 15px}.stage-grid{display:flex;justify-content:space-between;align-items:end}.stage-grid h1{font:800 clamp(2.6rem,5vw,5rem)/.98 "Playfair Display",serif;margin:0;letter-spacing:-.04em;max-width:850px}.stage-grid h1 em{color:var(--yellow);font-style:italic}.stage-grid p{max-width:650px;font-size:1rem;line-height:1.7;color:#dcefe0}.flag-ribbon{display:flex;align-items:end;height:70px;gap:7px;opacity:.9}.flag-ribbon span{width:12px;border-radius:12px 12px 0 0;background:var(--yellow)}.flag-ribbon span:nth-child(1){height:46px}.flag-ribbon span:nth-child(2){height:70px;background:#fff}.flag-ribbon span:nth-child(3){height:57px;background:#00209f}.search-panel{position:relative;margin:48px 0 20px;background:white;color:var(--ink);padding:10px;display:grid;grid-template-columns:1.5fr 1fr .8fr 1fr auto;box-shadow:var(--shadow);border-radius:4px}.field{display:flex;flex-direction:column;padding:4px 15px;border-right:1px solid var(--line);min-width:0}.field span,.results-tools label{font-size:.66rem;text-transform:uppercase;letter-spacing:.1em;font-weight:800;color:#748078}.field input,.field select{border:0;background:transparent;min-height:37px;outline:none;color:var(--ink);width:100%}.search-button,.primary{border:0;background:var(--yellow);color:#203018;font-weight:800;padding:0 24px;cursor:pointer;border-radius:2px;box-shadow:inset 0 -3px rgba(0,0,0,.08)}.search-button:hover,.primary:hover{filter:brightness(.96)}.quick-filters{display:flex;gap:8px;flex-wrap:wrap}.quick-filters button,.filter-chip{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.24);color:#fff;padding:8px 13px;border-radius:30px;font-size:.77rem;cursor:pointer}.directory-wrap{padding:75px clamp(22px,7vw,110px) 90px;max-width:1560px;margin:auto}.results-heading{display:flex;justify-content:space-between;align-items:end;margin-bottom:25px}.results-heading h2,.community-band h2,.how h2{font:800 clamp(2rem,3.4vw,3.4rem)/1.05 "Playfair Display",serif;margin:0}.directory-wrap .section-kicker,.how .section-kicker{color:var(--green)}.results-tools{display:flex;align-items:center;gap:25px;color:var(--muted);font-size:.82rem}.results-tools label{display:flex;align-items:center;gap:8px}.results-tools select{background:transparent;border:0;border-bottom:1px solid var(--line);padding:7px;color:var(--ink)}.active-filters{display:flex;gap:8px;margin-bottom:18px;min-height:1px}.active-filters button{border:1px solid #b8cabb;background:white;color:var(--green-dark);border-radius:30px;padding:7px 12px}.business-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:19px}.card{background:white;border:1px solid var(--line);position:relative;transition:.2s;display:flex;flex-direction:column;min-height:330px}.card:hover{transform:translateY(-4px);box-shadow:var(--shadow);border-color:#a8c6ae}.card-top{height:9px;background:var(--green)}.card:nth-child(3n+2) .card-top{background:var(--yellow)}.card:nth-child(3n) .card-top{background:#00209f}.card-body{padding:23px 25px 18px;flex:1}.card .badge{display:inline-flex;background:#eaf6ec;color:var(--green-dark);font-weight:800;font-size:.66rem;letter-spacing:.08em;padding:6px 9px;text-transform:uppercase}.card h3{font:700 1.42rem/1.2 "Playfair Display",serif;margin:15px 0 7px}.card .location{color:var(--muted);font-size:.82rem;margin:0}.card .description{font-size:.86rem;line-height:1.6;color:#526057;margin:19px 0}.card-meta{display:flex;justify-content:space-between;align-items:center;padding:14px 25px;border-top:1px solid var(--line);font-size:.78rem}.status-new{color:var(--muted)}.view-profile{color:var(--green-dark);font-weight:800;background:transparent;border:0;cursor:pointer}.view-profile:after{content:" →";color:var(--yellow);font-size:1.2rem}.empty-state{text-align:center;background:white;padding:70px;border:1px dashed #b9ccbd}.empty-state span{font-size:2rem;color:var(--green)}.empty-state button{border:0;background:var(--green);color:white;padding:10px 18px}.pagination{display:flex;justify-content:center;gap:7px;margin-top:35px}.pagination button{width:39px;height:39px;border:1px solid var(--line);background:white;cursor:pointer}.pagination button.active{background:var(--green);color:white}.community-band{background:var(--green-dark);color:white;display:grid;grid-template-columns:1fr .85fr .9fr;gap:70px;padding:85px clamp(22px,7vw,110px);align-items:center}.community-band h2 em{color:var(--yellow)}.community-band>p{line-height:1.8;color:#d3e7d7}.country-list{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:rgba(255,255,255,.15)}.country-list div{background:var(--green-dark);padding:22px}.country-list b{display:block;color:var(--yellow);font:700 2rem "Playfair Display",serif}.country-list span{font-size:.75rem}.how{padding:85px clamp(22px,7vw,110px);max-width:1560px;margin:auto}.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);margin-top:42px}.steps article{background:var(--field);padding:35px}.steps b{font:800 2.6rem "Playfair Display",serif;color:#c7dccb}.steps h3{font-size:1rem}.steps p{color:var(--muted);font-size:.87rem;line-height:1.6}footer{background:#071a0c;color:white;padding:50px clamp(22px,7vw,110px);display:grid;grid-template-columns:1fr 1fr 1fr;align-items:center}footer>p{text-align:center;color:#aab7ad;font-size:.8rem}footer .legal{text-align:right}.profile-dialog,.review-dialog,.admin-dialog{border:0;padding:0;box-shadow:0 30px 90px #001c0a80}.profile-dialog::backdrop,.review-dialog::backdrop,.admin-dialog::backdrop{background:rgba(0,25,7,.72);backdrop-filter:blur(5px)}.profile-dialog{width:min(880px,94vw);max-height:90vh}.dialog-close{position:absolute;right:18px;top:13px;width:38px;height:38px;border:0;background:#eef4ef;font-size:1.5rem;cursor:pointer;border-radius:50%;z-index:2}.profile-head{background:var(--green);color:white;padding:45px;position:relative}.profile-head h2{font:800 clamp(2rem,4vw,3.2rem) "Playfair Display",serif;margin:12px 0}.profile-body{display:grid;grid-template-columns:1.4fr .8fr;gap:40px;padding:38px 45px}.profile-body h3{font-family:"Playfair Display",serif}.profile-body p,.profile-body li{font-size:.88rem;line-height:1.7;color:#526057}.profile-actions{display:grid;gap:10px}.profile-actions a,.outline-button{padding:13px;text-align:center;text-decoration:none;font-weight:800;font-size:.8rem;border:0;cursor:pointer}.profile-actions .whatsapp{background:var(--yellow);color:var(--ink)}.profile-actions .website{background:var(--green);color:white}.outline-button{border:1px solid var(--green);background:white;color:var(--green)}.profile-facts{border-left:1px solid var(--line);padding-left:30px}.profile-facts div{padding:12px 0;border-bottom:1px solid var(--line)}.profile-facts small{display:block;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-size:.64rem}.profile-facts b{font-size:.84rem}.review-dialog{width:min(540px,94vw);padding:38px}.review-dialog h2{font-family:"Playfair Display",serif}.review-dialog label{display:grid;gap:7px;font-size:.8rem;font-weight:700;margin:18px 0}.review-dialog input,.review-dialog textarea{background:var(--field);border:1px solid var(--line);padding:13px}.review-dialog textarea{min-height:120px;resize:vertical}.review-dialog fieldset{border:0;padding:0}.star-input button{border:0;background:transparent;font-size:1.8rem;color:#bcc9bf;cursor:pointer;padding:0 3px}.star-input button.on{color:#e1d900}.review-dialog .primary{width:100%;height:48px}.admin-dialog{width:min(1180px,96vw);height:min(760px,94vh)}.admin-shell{display:grid;grid-template-columns:230px 1fr;height:100%}.admin-shell aside{background:#082b12;color:white;padding:30px 18px;position:relative;display:flex;flex-direction:column}.admin-brand{font:800 1.6rem "Playfair Display",serif;color:var(--yellow);padding:0 12px 30px}.admin-brand span{display:block;color:white;font:600 .65rem Manrope;letter-spacing:.17em;text-transform:uppercase}.admin-nav{background:transparent;border:0;color:#c9dccd;text-align:left;padding:13px;border-radius:3px;cursor:pointer}.admin-nav.active{background:var(--green);color:white}.admin-nav i{float:right;background:var(--yellow);color:#172018;border-radius:20px;padding:2px 7px;font-style:normal}.admin-shell aside small{margin-top:auto;color:#88a58e;padding:12px}.admin-shell>section{padding:38px;overflow:auto;background:var(--field)}.admin-shell h2{font:800 2rem "Playfair Display",serif}.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:13px}.stat{background:white;border:1px solid var(--line);padding:20px}.stat b{display:block;font:800 2rem "Playfair Display",serif;color:var(--green)}.stat span{font-size:.7rem;color:var(--muted)}.admin-table{width:100%;border-collapse:collapse;background:white;margin-top:25px;font-size:.78rem}.admin-table th,.admin-table td{text-align:left;padding:13px;border-bottom:1px solid var(--line)}.admin-table th{font-size:.65rem;text-transform:uppercase;color:var(--muted)}.pill{padding:4px 8px;border-radius:20px;background:#e5f4e8;color:var(--green-dark);font-size:.65rem;font-weight:800}.pill.warn{background:#fff8cf;color:#665f00}.admin-topline{display:flex;justify-content:space-between;align-items:center}.admin-topline button{background:var(--green);color:white;border:0;padding:11px 15px}.toast{position:fixed;left:50%;bottom:25px;transform:translate(-50%,100px);background:#092b12;color:white;padding:13px 20px;z-index:50;opacity:0;transition:.3s}.toast.show{opacity:1;transform:translate(-50%,0)}@media(max-width:1000px){.search-panel{grid-template-columns:1fr 1fr}.search-button{min-height:52px}.business-grid{grid-template-columns:1fr 1fr}.community-band{grid-template-columns:1fr 1fr}.community-band>p{grid-column:1/-1}.site-header nav a:nth-child(2),.site-header nav a:nth-child(3){display:none}}@media(max-width:680px){.site-header{height:70px;padding:0 16px}.site-header nav{gap:13px}.site-header nav a{display:none}.search-stage{padding:40px 18px 30px}.stage-grid h1{font-size:2.6rem}.stage-grid p{font-size:.88rem}.flag-ribbon{display:none}.search-panel{grid-template-columns:1fr;padding:9px;margin-top:30px}.field{border-right:0;border-bottom:1px solid var(--line)}.search-button{margin-top:7px}.directory-wrap{padding:55px 18px}.results-heading{align-items:start;gap:20px}.results-tools{display:block;text-align:right}.business-grid{grid-template-columns:1fr}.community-band{grid-template-columns:1fr;padding:60px 22px;gap:35px}.steps{grid-template-columns:1fr}.how{padding:60px 22px}footer{grid-template-columns:1fr;gap:20px;text-align:center}footer .brand{justify-content:center}footer .legal{text-align:center}.profile-body{grid-template-columns:1fr;padding:28px}.profile-facts{border-left:0;padding-left:0}.profile-head{padding:35px 28px}.admin-shell{grid-template-columns:1fr}.admin-shell aside{display:none}.admin-shell>section{padding:22px}.stat-grid{grid-template-columns:1fr 1fr}.admin-table{display:block;overflow:auto}}
+
+.html-overflow-guard,
+html,
+body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+body > header,
+body > main,
+body > footer,
+.search-stage,
+.directory-wrap,
+.community-band,
+.how {
+  max-width: 100%;
+}
+
+.search-stage { overflow: hidden; }
+.stage-grid > *,
+.results-heading > *,
+.community-band > *,
+.profile-body > *,
+.admin-shell > *,
+.admin-shell > section { min-width: 0; }
+.active-filters { flex-wrap: wrap; }
+.card,
+.review-item,
+.profile-dialog,
+.review-dialog,
+.admin-dialog,
+.admin-login-dialog { overflow-wrap: anywhere; }
+.profile-dialog,
+.review-dialog,
+.admin-dialog,
+.admin-login-dialog { max-width: calc(100vw - 24px); }
+
+.analytics-note {
+  max-width: 760px;
+  color: var(--muted);
+  font-size: .82rem;
+  line-height: 1.6;
+}
+
+.analytics-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin: 24px 0;
+}
+
+.analytics-stats > div {
+  background: white;
+  border: 1px solid var(--line);
+  padding: 18px;
+}
+
+.analytics-stats small {
+  display: block;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  font-size: .64rem;
+}
+
+.analytics-stats b {
+  display: block;
+  color: var(--green-dark);
+  font: 800 1.55rem "Playfair Display", serif;
+  margin-top: 7px;
+}
+
+.analytics-chart {
+  background: white;
+  border: 1px solid var(--line);
+  padding: 22px;
+  display: grid;
+  gap: 13px;
+}
+
+.analytics-row {
+  display: grid;
+  grid-template-columns: 145px 1fr 40px;
+  gap: 14px;
+  align-items: center;
+  font-size: .76rem;
+}
+
+.analytics-row > span { font-weight: 700; }
+.analytics-row > b { text-align: right; color: var(--green-dark); }
+.bar-track { height: 17px; background: #eef3ef; overflow: hidden; border-radius: 2px; }
+.bar-track i { display: block; height: 100%; background: linear-gradient(90deg, var(--green), var(--yellow)); border-radius: 2px; }
+.chart-footnote { font-size: .68rem; color: var(--muted); }
+.rating-mini { color: var(--green-dark); font-weight: 800; }
+.stars { color: var(--yellow); letter-spacing: .06em; text-shadow: 0 1px 1px rgba(0,0,0,.16); }
+.profile-rating { display: flex; align-items: center; gap: 10px; margin-top: 18px; }
+.profile-rating > b { font: 800 1.7rem "Playfair Display", serif; color: var(--yellow); }
+.profile-rating small { color: #d8ebdc; }
+.reviews-heading { display: flex; align-items: end; justify-content: space-between; gap: 16px; margin-top: 28px; border-top: 1px solid var(--line); padding-top: 20px; }
+.reviews-heading h3, .reviews-heading p { margin: 0; }
+.reviews-heading p { color: var(--muted); font-size: .76rem; margin-top: 4px; }
+.review-list { display: grid; gap: 12px; margin-top: 16px; }
+.review-item { border: 1px solid var(--line); background: var(--field); padding: 16px; }
+.review-item > div { display: flex; justify-content: space-between; gap: 15px; }
+.review-item small { color: var(--muted); font-size: .65rem; }
+.review-item p { margin-bottom: 0; }
+.no-reviews { border: 1px dashed var(--line); padding: 17px; }
+.admin-login-dialog { width: min(470px, 94vw); border: 0; padding: 0; box-shadow: 0 30px 90px #001c0a80; }
+.admin-login-dialog::backdrop { background: rgba(0,25,7,.72); backdrop-filter: blur(5px); }
+#adminLoginContent { padding: 36px; position: relative; }
+.login-brand { display: flex; align-items: center; gap: 12px; margin-bottom: 30px; }
+.login-brand > span { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%; background: var(--green); color: var(--yellow); font: 800 1.15rem "Playfair Display", serif; }
+.login-brand b, .login-brand small { display: block; }
+.login-brand small { color: var(--muted); margin-top: 3px; }
+.admin-login-dialog h2 { font: 800 2rem "Playfair Display", serif; margin: 8px 0; }
+.admin-login-dialog form { display: grid; gap: 15px; margin-top: 22px; }
+.admin-login-dialog label { display: grid; gap: 6px; font-size: .76rem; font-weight: 800; }
+.admin-login-dialog input { border: 1px solid var(--line); background: var(--field); padding: 12px; }
+.admin-login-dialog .primary { min-height: 48px; }
+.text-button { border: 0; background: transparent; color: var(--green-dark); font-weight: 800; cursor: pointer; padding: 8px; }
+.demo-security { border-top: 1px solid var(--line); margin: 24px 0 0; padding-top: 14px; color: var(--muted); font-size: .68rem; line-height: 1.5; }
+.login-error { min-height: 18px; color: #a51616; font-size: .75rem; margin: 0; }
+
+@media (max-width: 680px) {
+  .site-header { gap: 10px; }
+  .site-header .brand { min-width: 0; }
+  .site-header .brand b { font-size: .92rem; }
+  .site-header .brand small { font-size: .55rem; letter-spacing: .12em; }
+  .admin-link { padding: 8px 11px; }
+  .results-heading { flex-wrap: wrap; }
+  .results-tools { width: 100%; display: flex; justify-content: space-between; text-align: left; }
+  .card-meta { gap: 10px; padding-inline: 18px; }
+  .reviews-heading { align-items: flex-start; flex-direction: column; }
+  .analytics-stats { grid-template-columns: 1fr; }
+  .analytics-row { grid-template-columns: 110px 1fr 28px; gap: 8px; }
+}
+</style>
+  
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="#/" aria-label="Haitian Global Business Directory home">
+      <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span><b>Haitian Global</b><small>Business Directory</small></span>
+    </a>
+    <nav aria-label="Primary navigation">
+      <a class="active" href="#/">Directory</a>
+      <a href="#about">About</a>
+      <a href="#how-it-works">How it works</a>
+      <button class="admin-link" id="adminOpen" type="button">Admin</button>
+    </nav>
+  </header>
+
+  <main id="app">
+    <section class="search-stage" aria-labelledby="searchTitle">
+      <div class="eyebrow">Haitian-owned. Community trusted. Globally connected.</div>
+      <div class="stage-grid">
+        <div>
+          <h1 id="searchTitle">Find Haitian businesses,<br><em>wherever you are.</em></h1>
+          <p>Discover professionals, services, shops, restaurants, and stays across Haiti, the United States, Canada, and France.</p>
+        </div>
+        <div class="flag-ribbon" aria-hidden="true"><span></span><span></span><span></span></div>
+      </div>
+      <form class="search-panel" id="searchForm">
+        <label class="field grow"><span>Business or service</span><input id="query" type="search" placeholder="Try “dentist” or a business name"></label>
+        <label class="field"><span>Category</span><select id="category"><option value="">All categories</option></select></label>
+        <label class="field"><span>Country</span><select id="country"><option value="">All countries</option></select></label>
+        <label class="field"><span>City or region</span><input id="location" type="search" placeholder="Miami, Québec, Paris…"></label>
+        <button class="search-button" type="submit"><span aria-hidden="true">⌕</span> Search</button>
+      </form>
+      <div class="quick-filters" id="quickFilters" aria-label="Popular categories"></div>
+    </section>
+
+    <section class="directory-wrap" id="directory">
+      <div class="results-heading">
+        <div><p class="section-kicker">THE DIRECTORY</p><h2 id="resultsTitle">Explore Haitian-owned businesses</h2></div>
+        <div class="results-tools"><span id="resultCount"></span><label>Sort <select id="sort"><option value="featured">Featured</option><option value="name">Name A–Z</option><option value="newest">Newest</option></select></label></div>
+      </div>
+      <div class="active-filters" id="activeFilters"></div>
+      <div class="business-grid" id="businessGrid" aria-live="polite"></div>
+      <div class="empty-state" id="emptyState" hidden><span>⌕</span><h3>No businesses match those filters.</h3><p>Try a broader category or clear one of your search fields.</p><button id="clearSearch">Clear search</button></div>
+      <div class="pagination" id="pagination"></div>
+    </section>
+
+    <section class="community-band" id="about">
+      <div><p class="section-kicker">BUILT FOR THE COMMUNITY</p><h2>One directory.<br>Four countries.<br><em>Countless connections.</em></h2></div>
+      <div class="country-list"><div><b>US</b><span>United States</span></div><div><b>CA</b><span>Canada</span></div><div><b>FR</b><span>France</span></div><div><b>HT</b><span>Haiti</span></div></div>
+      <p>Every listing is centrally managed to keep information accurate and useful. Business owners do not need an account—updates are handled by the directory team.</p>
+    </section>
+
+    <section class="how" id="how-it-works">
+      <p class="section-kicker">HOW IT WORKS</p><h2>Search. Discover. Connect.</h2>
+      <div class="steps"><article><b>01</b><h3>Search precisely</h3><p>Combine business name, category, country, city, or region.</p></article><article><b>02</b><h3>Review the profile</h3><p>See services, languages, hours, location, and community feedback.</p></article><article><b>03</b><h3>Connect directly</h3><p>Visit the business website or start a WhatsApp conversation.</p></article></div>
+    </section>
+  </main>
+
+  <dialog id="profileDialog" class="profile-dialog"><div id="profileContent"></div></dialog>
+  <dialog id="reviewDialog" class="review-dialog"><form method="dialog" id="reviewForm"><button class="dialog-close" value="cancel" aria-label="Close">×</button><p class="section-kicker">COMMUNITY REVIEW</p><h2>Share your experience</h2><p>Your review will be checked by the directory team before it appears publicly.</p><label>Your name<input required id="reviewerName"></label><fieldset><legend>Rating</legend><div class="star-input" id="starInput" role="radiogroup" aria-label="Rating"><button type="button" data-star="1">★</button><button type="button" data-star="2">★</button><button type="button" data-star="3">★</button><button type="button" data-star="4">★</button><button type="button" data-star="5">★</button></div></fieldset><label>Your review<textarea required minlength="20" id="reviewText" placeholder="Tell the community what stood out…"></textarea></label><button class="primary" id="submitReview" value="default">Submit for review</button></form></dialog>
+  <dialog id="adminDialog" class="admin-dialog"><div class="admin-shell"><aside><button class="dialog-close" id="adminClose" aria-label="Close">×</button><div class="admin-brand">HG<span>Admin</span></div><button class="admin-nav active" data-panel="dashboard">Overview</button><button class="admin-nav" data-panel="analytics">Search analytics</button><button class="admin-nav" data-panel="businesses">Businesses</button><button class="admin-nav" data-panel="reviews">Review queue <i>3</i></button><button class="admin-nav" data-panel="memberships">Renewals</button><button class="admin-nav" data-panel="audits">Audits</button><small>Private management preview</small></aside><section id="adminPanel"></section></div></dialog>
+  <dialog id="adminLoginDialog" class="admin-login-dialog"><div id="adminLoginContent"></div></dialog>
+
+  <footer><a class="brand" href="#/"><span class="brand-mark"><i></i><i></i><i></i></span><span><b>Haitian Global</b><small>Business Directory</small></span></a><p>Connecting Haitian enterprise across borders.</p><p class="legal">© 2026 Haitian Global Business Directory. Demonstration listings are clearly identified.</p></footer>
+  <div class="toast" id="toast" role="status"></div>
+  <script>const businesses=[
+{id:1,slug:'lakay-kitchen-miami',name:'Lakay Kitchen',category:'Restaurant',secondary:['Catering'],city:'Miami',region:'Florida',country:'United States',description:'Traditional Haitian cooking and catering for family celebrations, community events, and local gatherings.',services:['Dine-in','Catering','Private events'],languages:['English','Haitian Creole','French'],phone:'+13055550114',whatsapp:'13055550114',website:'https://example.com',hours:'Mon–Sat · 11:00 AM–9:00 PM',established:2018,mode:'In person',featured:true,joined:'2026-06-10'},
+{id:2,slug:'bel-fleur-dental-montreal',name:'Bel Fleur Dental',category:'Dentist',secondary:['Medical Services'],city:'Montréal',region:'Québec',country:'Canada',description:'Family-focused dental care with multilingual appointment support for adults and children.',services:['Preventive care','Restorative dentistry','Family dentistry'],languages:['French','English','Haitian Creole'],phone:'+15145550189',whatsapp:'15145550189',website:'',hours:'Mon–Fri · 8:30 AM–5:30 PM',established:2015,mode:'In person',featured:true,joined:'2026-05-02'},
+{id:3,slug:'cabinet-jean-baptiste-paris',name:'Cabinet Jean-Baptiste',category:'Lawyer',secondary:['Legal Services','Immigration Services'],city:'Paris',region:'Île-de-France',country:'France',description:'Clear legal guidance for individuals, families, and entrepreneurs navigating French administrative matters.',services:['Business guidance','Immigration matters','Document review'],languages:['French','Haitian Creole'],phone:'+33185550172',whatsapp:'33185550172',website:'https://example.com',hours:'By appointment',established:2012,mode:'In person & online',featured:true,joined:'2026-04-18'},
+{id:4,slug:'kreyol-code-lab-port-au-prince',name:'Kreyòl Code Lab',category:'Professional Services',secondary:['Entrepreneur'],city:'Port-au-Prince',region:'Ouest',country:'Haiti',description:'Digital systems, websites, and technology training for growing businesses and nonprofit organizations.',services:['Web development','Business systems','Technology training'],languages:['Haitian Creole','French','English'],phone:'+50935550122',whatsapp:'50935550122',website:'https://example.com',hours:'Mon–Fri · 9:00 AM–5:00 PM',established:2020,mode:'In person & online',featured:false,joined:'2026-08-11'},
+{id:5,slug:'caribbean-key-realty-brooklyn',name:'Caribbean Key Realty',category:'Real Estate',secondary:['Mortgage Professional'],city:'Brooklyn',region:'New York',country:'United States',description:'Residential real estate guidance for buyers, sellers, and families preparing for homeownership.',services:['Home buying','Property sales','Referral network'],languages:['English','Haitian Creole'],phone:'+17185550161',whatsapp:'17185550161',website:'https://example.com',hours:'Mon–Sat · By appointment',established:2017,mode:'In person & online',featured:false,joined:'2026-07-26'},
+{id:6,slug:'ti-soley-stays-jacmel',name:'Ti Solèy Stays',category:'Airbnb / Short-Term Rental',secondary:['Transportation'],city:'Jacmel',region:'Sud-Est',country:'Haiti',description:'Locally hosted short-term stays with airport coordination and recommendations for exploring Jacmel.',services:['Short-term stays','Airport coordination','Local recommendations'],languages:['Haitian Creole','French','English'],phone:'+50938550110',whatsapp:'50938550110',website:'',hours:'WhatsApp · 8:00 AM–8:00 PM',established:2022,mode:'In person',featured:true,joined:'2026-08-30'},
+{id:7,slug:'maison-kreyol-beauty-laval',name:'Maison Kreyòl Beauty',category:'Beauty',secondary:['Hair Salon','Retail'],city:'Laval',region:'Québec',country:'Canada',description:'Hair care, protective styling, and carefully selected beauty products in a welcoming studio.',services:['Natural hair care','Protective styles','Beauty products'],languages:['French','English','Haitian Creole'],phone:'+14505550126',whatsapp:'14505550126',website:'https://example.com',hours:'Tue–Sat · 9:00 AM–6:00 PM',established:2019,mode:'In person',featured:false,joined:'2026-06-22'},
+{id:8,slug:'dorsainvil-tax-advisory-boston',name:'Dorsainvil Tax Advisory',category:'Tax Services',secondary:['Accountant','Financial Services'],city:'Boston',region:'Massachusetts',country:'United States',description:'Tax preparation and year-round bookkeeping for individuals, independent professionals, and small businesses.',services:['Tax preparation','Bookkeeping','Business setup'],languages:['English','Haitian Creole','French'],phone:'+16175550146',whatsapp:'16175550146',website:'https://example.com',hours:'Mon–Fri · 9:00 AM–6:00 PM',established:2014,mode:'In person & online',featured:true,joined:'2026-03-15'},
+{id:9,slug:'atelier-noir-jaune-lyon',name:'Atelier Noir & Jaune',category:'Clothing',secondary:['Retail','Vendor'],city:'Lyon',region:'Auvergne-Rhône-Alpes',country:'France',description:'Small-batch apparel and accessories inspired by Haitian craft, color, and contemporary design.',services:['Apparel','Accessories','Custom orders'],languages:['French','Haitian Creole'],phone:'+33472550190',whatsapp:'33472550190',website:'https://example.com',hours:'Wed–Sat · 10:00 AM–7:00 PM',established:2021,mode:'In person & online',featured:false,joined:'2026-09-01'},
+{id:10,slug:'dr-johnson-family-dentistry-fort-lauderdale',name:'Dr. Johnson Family Dentistry',category:'Dentist',secondary:['Medical Services'],city:'Fort Lauderdale',region:'Florida',country:'United States',description:'Friendly preventive and restorative dental care for adults, children, and multigenerational families.',services:['Dental exams','Preventive care','Restorative dentistry'],languages:['English','Haitian Creole'],phone:'+19545550191',whatsapp:'19545550191',website:'https://example.com',hours:'Mon–Fri · 8:00 AM–5:00 PM',established:2016,mode:'In person',featured:true,joined:'2026-09-10',reviews:[{name:'Marie P.',rating:5,date:'September 8, 2026',comment:'The staff explained every step clearly and made the appointment feel comfortable. This is demonstration review content.'},{name:'Jean L.',rating:4,date:'September 4, 2026',comment:'Easy scheduling, a welcoming office, and thoughtful service. This is demonstration review content.'}]}
+];
+const categories=[...new Set(businesses.flatMap(b=>[b.category,...b.secondary]))].sort(),countries=['United States','Canada','France','Haiti'];
+let state={query:'',category:'',country:'',location:'',sort:'featured',page:1}; const pageSize=6;
+const analyticsGroups=['Restaurant','Dentist','Lawyer','Stores & Retail','Real Estate','Beauty & Hair','Financial Services','Professional Services','Short-Term Rental','Other'];
+const $=s=>document.querySelector(s),$=s=>[...document.querySelectorAll(s)];
+function init(){if(new URLSearchParams(location.search).get('admin')==='preview')$('#adminOpen').hidden=false;categories.forEach(x=>$('#category').add(new Option(x,x)));countries.forEach(x=>$('#country').add(new Option(x,x)));['Restaurant','Dentist','Lawyer','Real Estate','Beauty'].forEach(x=>{const b=document.createElement('button');b.type='button';b.textContent=x;b.onclick=()=>{state.category=x;$('#category').value=x;state.page=1;trackSearch(x);render()};$('#quickFilters').append(b)});render();bind();route()}
+function bind(){$('#searchForm').onsubmit=e=>{e.preventDefault();state={...state,query:$('#query').value.trim(),category:$('#category').value,country:$('#country').value,location:$('#location').value.trim(),page:1};trackSearch(state.category||state.query);render();$('#directory').scrollIntoView({behavior:'smooth'})};$('#sort').onchange=e=>{state.sort=e.target.value;render()};$('#clearSearch').onclick=clear;$('#adminOpen').onclick=openAdminLogin;$('#adminClose').onclick=()=>$('#adminDialog').close();$('.admin-nav').forEach(b=>b.onclick=()=>{$('.admin-nav').forEach(x=>x.classList.remove('active'));b.classList.add('active');b.dataset.panel==='analytics'?renderAnalytics():renderAdmin(b.dataset.panel)});$('#profileDialog').addEventListener('click',e=>{if(e.target===$('#profileDialog'))$('#profileDialog').close()});window.addEventListener('hashchange',route);$('#starInput button').forEach(b=>b.onclick=()=>{$('#starInput button').forEach(x=>x.classList.toggle('on',+x.dataset.star<=+b.dataset.star));$('#starInput').dataset.value=b.dataset.star});$('#reviewForm').onsubmit=e=>{e.preventDefault();if(!$('#starInput').dataset.value){toast('Please select a star rating.');return}const pending=JSON.parse(localStorage.getItem('hgbd_pending_reviews')||'[]');pending.push({businessId:+$('#reviewDialog').dataset.businessId,name:$('#reviewerName').value.trim(),rating:+$('#starInput').dataset.value,comment:$('#reviewText').value.trim(),status:'pending',submittedAt:new Date().toISOString()});localStorage.setItem('hgbd_pending_reviews',JSON.stringify(pending));$('#reviewDialog').close();toast('Thank you. Your review is saved and waiting for approval.');e.target.reset();delete $('#starInput').dataset.value;$('#starInput button').forEach(x=>x.classList.remove('on'))}}
+function filtered(){const q=state.query.toLowerCase(),loc=state.location.toLowerCase();let r=businesses.filter(b=>(!q||[b.name,b.category,b.description,...b.services].join(' ').toLowerCase().includes(q))&&(!state.category||b.category===state.category||b.secondary.includes(state.category))&&(!state.country||b.country===state.country)&&(!loc||[b.city,b.region].join(' ').toLowerCase().includes(loc)));return r.sort((a,b)=>state.sort==='name'?a.name.localeCompare(b.name):state.sort==='newest'?b.joined.localeCompare(a.joined):Number(b.featured)-Number(a.featured)||a.name.localeCompare(b.name))}
+function render(){const all=filtered(),pages=Math.max(1,Math.ceil(all.length/pageSize));if(state.page>pages)state.page=1;const shown=all.slice((state.page-1)*pageSize,state.page*pageSize);$('#resultCount').textContent=`${all.length} ${all.length===1?'listing':'listings'}`;$('#resultsTitle').textContent=state.category?`${state.category} businesses`:'Explore Haitian-owned businesses';$('#businessGrid').innerHTML=shown.map(card).join('');$('#businessGrid').hidden=!shown.length;$('#emptyState').hidden=!!shown.length;$('.view-profile').forEach(b=>b.onclick=()=>openProfile(+b.dataset.id));renderChips();$('#pagination').innerHTML=pages>1?Array.from({length:pages},(_,i)=>`<button class="${state.page===i+1?'active':''}" data-page="${i+1}">${i+1}</button>`).join(''):'';$('#pagination button').forEach(b=>b.onclick=()=>{state.page=+b.dataset.page;render();$('#directory').scrollIntoView({behavior:'smooth'})})}
+function card(b){const r=reviewSummary(b);return `<article class="card"><div class="card-top"></div><div class="card-body"><span class="badge">${escapeHTML(b.category)}</span><h3>${escapeHTML(b.name)}</h3><p class="location">${escapeHTML(b.city)}, ${escapeHTML(b.region)} · ${escapeHTML(b.country)}</p><p class="description">${escapeHTML(b.description)}</p></div><div class="card-meta"><span class="${r.count?'rating-mini':'status-new'}">${r.count?`${stars(r.average)} ${r.average.toFixed(1)} (${r.count})`:'No reviews yet'}</span><button class="view-profile" data-id="${b.id}">View profile</button></div></article>`}
+function renderChips(){const f=[['query',state.query],['category',state.category],['country',state.country],['location',state.location]].filter(x=>x[1]);$('#activeFilters').innerHTML=f.map(([k,v])=>`<button data-key="${k}">${escapeHTML(v)} ×</button>`).join('');$('#activeFilters button').forEach(b=>b.onclick=()=>{state[b.dataset.key]='';const el=$('#'+b.dataset.key);if(el)el.value='';render()})}
+function clear(){state={query:'',category:'',country:'',location:'',sort:'featured',page:1};['query','category','country','location'].forEach(x=>$('#'+x).value='');$('#sort').value='featured';render()}
+function route(){const m=location.hash.match(/^#\/business\/(.+)$/);if(m){const b=businesses.find(x=>x.slug===m[1]);if(b)showProfile(b)}else if($('#profileDialog').open)$('#profileDialog').close()}
+function openProfile(id){const b=businesses.find(x=>x.id===id);location.hash=`/business/${b.slug}`}
+function showProfile(b){const r=reviewSummary(b),reviewList=r.count?b.reviews.map(x=>`<article class="review-item"><div><b>${escapeHTML(x.name)}</b><span>${stars(x.rating)}</span></div><small>${escapeHTML(x.date)} · Demonstration review</small><p>${escapeHTML(x.comment)}</p></article>`).join(''):'<p class="no-reviews">No approved reviews yet. Be the first to share an experience.</p>';$('#profileContent').innerHTML=`<button class="dialog-close" id="profileClose" aria-label="Close">×</button><header class="profile-head"><span class="badge">${escapeHTML(b.category)}</span><h2>${escapeHTML(b.name)}</h2><p>${escapeHTML(b.city)}, ${escapeHTML(b.region)} · ${escapeHTML(b.country)}</p>${r.count?`<div class="profile-rating"><b>${r.average.toFixed(1)}</b><span>${stars(r.average)}</span><small>Based on ${r.count} demonstration reviews</small></div>`:''}</header><div class="profile-body"><div><h3>About this business</h3><p>${escapeHTML(b.description)}</p><h3>Services</h3><ul>${b.services.map(x=>`<li>${escapeHTML(x)}</li>`).join('')}</ul><div class="reviews-heading"><div><h3>Community reviews</h3><p>${r.count?`${r.average.toFixed(1)} out of 5 · ${r.count} reviews`:'Reviews will appear here after approval.'}</p></div><button class="outline-button" id="writeReview">Write a review</button></div><div class="review-list">${reviewList}</div></div><aside class="profile-facts"><div><small>Business hours</small><b>${escapeHTML(b.hours)}</b></div><div><small>Languages</small><b>${b.languages.map(escapeHTML).join(', ')}</b></div><div><small>Service format</small><b>${escapeHTML(b.mode)}</b></div><div><small>Established</small><b>${b.established}</b></div><div class="profile-actions"><a class="whatsapp" target="_blank" rel="noopener" href="https://wa.me/${b.whatsapp}?text=${encodeURIComponent(`Hello ${b.name}, I found your business in the Haitian Global Business Directory.`)}">Message on WhatsApp</a>${b.website?`<a class="website" target="_blank" rel="noopener noreferrer" href="${b.website}">Visit website</a>`:''}</div></aside></div>`;$('#profileClose').onclick=()=>{location.hash='/'};$('#writeReview').onclick=()=>{$('#reviewDialog').dataset.businessId=b.id;$('#reviewDialog').showModal()};if(!$('#profileDialog').open)$('#profileDialog').showModal()}
+function reviewSummary(b){const reviews=b.reviews||[],total=reviews.reduce((n,x)=>n+x.rating,0);return{count:reviews.length,average:reviews.length?total/reviews.length:0}}
+function stars(rating){const rounded=Math.round(rating);return `<span class="stars" aria-label="${rating} out of 5 stars">${'★'.repeat(rounded)}${'☆'.repeat(5-rounded)}</span>`}
+function renderAdmin(panel){const content={dashboard:`<div class="admin-topline"><div><p class="section-kicker">DIRECTORY OPERATIONS</p><h2>Good afternoon, George.</h2></div><button onclick="showAdminNotice()">+ Add business</button></div><div class="stat-grid"><div class="stat"><b>${businesses.length}</b><span>Active listings</span></div><div class="stat"><b>3</b><span>Reviews awaiting action</span></div><div class="stat"><b>2</b><span>Renewals in 30 days</span></div><div class="stat"><b>1</b><span>Audit follow-up due</span></div></div>${businessTable('Recently updated')}`,businesses:`<div class="admin-topline"><div><p class="section-kicker">MANAGE RECORDS</p><h2>Businesses</h2></div><button onclick="showAdminNotice()">+ Add business</button></div>${businessTable('All directory records')}`,reviews:`<p class="section-kicker">MODERATION</p><h2>Review queue</h2><p>Submitted reviews stay private until an administrator approves them.</p>${simpleTable(['Submitted for','Reviewer','Status'],[['Lakay Kitchen','M. Joseph','Pending'],['Bel Fleur Dental','A. Pierre','Flagged'],['Ti Solèy Stays','C. Louis','Pending']])}`,memberships:`<p class="section-kicker">ANNUAL LISTINGS</p><h2>Renewal tracking</h2><p>The first year is free. The $11.99 annual listing subscription is attached to the business record—there is no business-owner account.</p>${simpleTable(['Business','Free period ends','Payment'],[['Cabinet Jean-Baptiste','Apr 18, 2027','Free year'],['Bel Fleur Dental','May 2, 2027','Free year'],['Lakay Kitchen','Jun 10, 2027','Free year']])}`,audits:`<p class="section-kicker">QUALITY CONTROL</p><h2>Business audits</h2><p>Detailed notes remain private unless a specific status is approved for public display.</p>${simpleTable(['Business','Last audit','Next step'],[['Kreyòl Code Lab','Aug 24, 2026','Complete'],['Caribbean Key Realty','Sep 2, 2026','Follow-up'],['Maison Kreyòl Beauty','Sep 6, 2026','Complete']])}`};$('#adminPanel').innerHTML=content[panel]||content.dashboard}
+function businessTable(title){return `<h3>${title}</h3><table class="admin-table"><thead><tr><th>Business</th><th>Location</th><th>Listing</th><th>Renewal</th></tr></thead><tbody>${businesses.slice(0,6).map(b=>`<tr><td><b>${escapeHTML(b.name)}</b><br><small>${escapeHTML(b.category)}</small></td><td>${escapeHTML(b.city)}, ${escapeHTML(b.country)}</td><td><span class="pill">Active</span></td><td><span class="pill warn">Free year</span></td></tr>`).join('')}</tbody></table>`}
+function simpleTable(head,rows){return `<table class="admin-table"><thead><tr>${head.map(x=>`<th>${x}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map((x,i)=>`<td>${i===2?`<span class="pill ${x==='Flagged'?'warn':''}">${x}</span>`:x}</td>`).join('')}</tr>`).join('')}</tbody></table>`}
+function analyticsData(){try{const saved=JSON.parse(localStorage.getItem('hgbd_search_analytics')||'{}');return Object.fromEntries(analyticsGroups.map(k=>[k,Number(saved[k])||0]))}catch{return Object.fromEntries(analyticsGroups.map(k=>[k,0]))}}
+function mapSearchGroup(term=''){const t=term.toLowerCase();if(/dent|dental/.test(t))return'Dentist';if(/law|legal|attorney|immigration/.test(t))return'Lawyer';if(/restaurant|food|cater|bakery|grocery/.test(t))return'Restaurant';if(/retail|store|shop|cloth|vendor/.test(t))return'Stores & Retail';if(/real estate|realt|mortgage/.test(t))return'Real Estate';if(/beauty|hair|salon|barber/.test(t))return'Beauty & Hair';if(/tax|account|financial|insurance/.test(t))return'Financial Services';if(/professional|entrepreneur|contract|clean|transport/.test(t))return'Professional Services';if(/airbnb|rental|short-term|stay/.test(t))return'Short-Term Rental';return'Other'}
+function trackSearch(term){const meaningful=String(term||'').trim();if(!meaningful)return;const data=analyticsData(),key=mapSearchGroup(meaningful);data[key]=(data[key]||0)+1;localStorage.setItem('hgbd_search_analytics',JSON.stringify(data))}
+function renderAnalytics(){const data=analyticsData(),rows=Object.entries(data).sort((a,b)=>b[1]-a[1]),total=rows.reduce((n,x)=>n+x[1],0),peak=rows[0]&&rows[0][1]?rows[0][0]:'No searches yet',max=Math.max(1,...rows.map(x=>x[1]));$('#adminPanel').innerHTML=`<div class="admin-topline"><div><p class="section-kicker">SEARCH DEMAND</p><h2>What visitors are looking for</h2></div><button onclick="exportAnalytics()">Export CSV</button></div><p class="analytics-note">Live searches recorded on this browser. Once Supabase is connected, this same report can combine searches from every visitor without exposing personal information.</p><div class="analytics-stats"><div><small>Total searches</small><b>${total}</b></div><div><small>Top category</small><b>${peak}</b></div><div><small>Categories tracked</small><b>${rows.length}</b></div></div><div class="analytics-chart" role="img" aria-label="Horizontal bar chart of directory searches by category">${rows.map(([name,value])=>`<div class="analytics-row"><span>${escapeHTML(name)}</span><div class="bar-track"><i style="width:${value?Math.max(4,value/max*100):0}%"></i></div><b>${value}</b></div>`).join('')}</div><p class="chart-footnote">Counts increase when someone submits a directory search or selects a popular category.</p>`}
+window.exportAnalytics=()=>{const data=analyticsData(),csv='Category,Searches\n'+Object.entries(data).map(([k,v])=>`"${k.replaceAll('"','""')}",${v}`).join('\n'),a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='haitian-directory-search-analytics.csv';a.click();URL.revokeObjectURL(a.href)};
+function adminCredentials(){try{return JSON.parse(localStorage.getItem('hgbd_admin_credentials')||'null')}catch{return null}}
+async function hashPassword(value){const bytes=new TextEncoder().encode(value),digest=await crypto.subtle.digest('SHA-256',bytes);return[...new Uint8Array(digest)].map(x=>x.toString(16).padStart(2,'0')).join('')}
+function openAdminLogin(){renderAdminLogin(adminCredentials()?'login':'setup');$('#adminLoginDialog').showModal()}
+function loginShell(body){return `<button class="dialog-close" id="loginClose" aria-label="Close">×</button><div class="login-brand"><span>HG</span><div><b>Owner Administration</b><small>Directory management demo</small></div></div>${body}<p class="demo-security">Demo access is stored only in this browser. Production recovery will use George’s verified email and a time-limited reset link.</p>`}
+function renderAdminLogin(mode){const content=$('#adminLoginContent');if(mode==='setup')content.innerHTML=loginShell(`<p class="section-kicker">FIRST-TIME SETUP</p><h2>Create the owner login</h2><p>Choose a username containing both letters and numbers.</p><form id="ownerSetupForm"><label>Username<input id="setupUsername" required pattern="(?=.*[A-Za-z])(?=.*[0-9])[A-Za-z0-9]{5,30}" title="Use 5–30 letters and numbers, including at least one of each."></label><label>Password<input id="setupPassword" type="password" required minlength="8"></label><label>Confirm password<input id="setupConfirm" type="password" required minlength="8"></label><button class="primary" type="submit">Create owner login</button></form>`);else if(mode==='reset')content.innerHTML=loginShell(`<p class="section-kicker">PASSWORD RECOVERY</p><h2>Create a new password</h2><form id="ownerResetForm"><label>Owner username<input id="resetUsername" required></label><label>New password<input id="resetPassword" type="password" required minlength="8"></label><label>Confirm new password<input id="resetConfirm" type="password" required minlength="8"></label><button class="primary" type="submit">Save new password</button><button class="text-button" id="backToLogin" type="button">Back to login</button></form>`);else content.innerHTML=loginShell(`<p class="section-kicker">OWNER LOGIN</p><h2>Welcome back</h2><form id="ownerLoginForm"><label>Username<input id="loginUsername" required autocomplete="username"></label><label>Password<input id="loginPassword" type="password" required autocomplete="current-password"></label><p class="login-error" id="loginError"></p><button class="primary" type="submit">Open admin</button><button class="text-button" id="forgotPassword" type="button">Forgot password?</button></form>`);$('#loginClose').onclick=()=>$('#adminLoginDialog').close();if($('#forgotPassword'))$('#forgotPassword').onclick=()=>renderAdminLogin('reset');if($('#backToLogin'))$('#backToLogin').onclick=()=>renderAdminLogin('login');if($('#ownerSetupForm'))$('#ownerSetupForm').onsubmit=saveOwnerSetup;if($('#ownerResetForm'))$('#ownerResetForm').onsubmit=resetOwnerPassword;if($('#ownerLoginForm'))$('#ownerLoginForm').onsubmit=verifyOwnerLogin}
+async function saveOwnerSetup(e){e.preventDefault();const username=$('#setupUsername').value.trim(),password=$('#setupPassword').value,confirm=$('#setupConfirm').value;if(!/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{5,30}$/.test(username)){toast('Username must contain letters and numbers.');return}if(password!==confirm){toast('The passwords do not match.');return}localStorage.setItem('hgbd_admin_credentials',JSON.stringify({username,passwordHash:await hashPassword(password)}));toast('Owner login created.');renderAdminLogin('login')}
+async function verifyOwnerLogin(e){e.preventDefault();const saved=adminCredentials(),valid=saved&&saved.username.toLowerCase()===$('#loginUsername').value.trim().toLowerCase()&&saved.passwordHash===await hashPassword($('#loginPassword').value);if(!valid){$('#loginError').textContent='The username or password is incorrect.';return}$('#adminLoginDialog').close();$('#adminDialog').showModal();$('.admin-nav').forEach(x=>x.classList.toggle('active',x.dataset.panel==='analytics'));renderAnalytics()}
+async function resetOwnerPassword(e){e.preventDefault();const saved=adminCredentials(),username=$('#resetUsername').value.trim(),password=$('#resetPassword').value,confirm=$('#resetConfirm').value;if(!saved||saved.username.toLowerCase()!==username.toLowerCase()){toast('That owner username was not found.');return}if(password!==confirm){toast('The passwords do not match.');return}localStorage.setItem('hgbd_admin_credentials',JSON.stringify({username:saved.username,passwordHash:await hashPassword(password)}));toast('Password updated. You can log in now.');renderAdminLogin('login')}
+window.showAdminNotice=()=>toast('The production form connects here after Supabase is configured.');function toast(msg){$('#toast').textContent=msg;$('#toast').classList.add('show');setTimeout(()=>$('#toast').classList.remove('show'),3200)}function escapeHTML(v){return String(v).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}init();
+</script>
+</body>
+</html>
