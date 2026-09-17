@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="description" content="Search a curated directory of Haitian-owned businesses across the United States, Canada, France, and Haiti.">
-  <meta name="theme-color" content="#128c20">
+  <meta name="theme-color" content="#00209f">
   <title>Haitian Global Business Directory</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -168,6 +168,25 @@ body > footer,
   .business-train{padding:42px 14px 54px}.business-train-copy{margin-bottom:24px}.train-viewport{width:100%;height:52vw;min-height:220px}.train-page{border-width:3px;border-radius:14px}.train-caption{bottom:10px;font-size:.63rem;padding:7px 11px}
 }
 @media (prefers-reduced-motion:reduce){.train-collection,.train-scenery{animation:none!important}.business-train{scroll-behavior:auto}}
+
+/* 2026 Haitian flag brand refresh */
+:root{--green:#00209f;--green-dark:#00145f;--red:#d21034;--field:#fffdf0;--yellow:#f0e813;--ink:#101d3d;--muted:#65708a;--line:#d9def0;--shadow:0 20px 50px rgba(0,32,159,.14)}
+body{overflow-x:hidden}.site-header,.search-stage,.profile-head{background:var(--green)}
+.community-band{background:var(--red)}.country-list div{background:#a90d29}
+.card:nth-child(3n+2) .card-top{background:var(--red)}.card:nth-child(3n) .card-top{background:var(--yellow)}
+.stage-grid p,.community-band>p{color:#fff}.directory-wrap .section-kicker,.how .section-kicker{color:var(--red)}
+footer,.admin-shell aside{background:var(--green-dark)}.profile-dialog::backdrop,.review-dialog::backdrop,.admin-dialog::backdrop{background:rgba(0,20,95,.72)}
+.badge,.card .badge,.pill{background:#eef1ff;color:var(--green-dark)}
+.review-spotlight{position:fixed;left:22px;bottom:22px;width:min(360px,calc(100vw - 44px));z-index:35;background:#fff;border:3px solid var(--green);border-radius:18px;box-shadow:0 22px 60px rgba(0,20,95,.26);overflow:hidden;opacity:0;transform:translateY(22px);pointer-events:none;transition:.28s ease}
+.review-spotlight.show{opacity:1;transform:translateY(0);pointer-events:auto}.review-spotlight[hidden],.review-spotlight-min[hidden]{display:none}
+.review-spotlight-accent{height:8px;background:linear-gradient(90deg,var(--blue,var(--green)) 0 50%,var(--red) 50%)}
+.review-spotlight-close{position:absolute;right:10px;top:13px;border:0;background:#fff;color:var(--green-dark);width:31px;height:31px;border-radius:50%;font-size:1.25rem;cursor:pointer}
+.review-spotlight-body{display:block;width:100%;border:0;background:#fff;text-align:left;padding:22px 24px 15px;cursor:pointer;color:var(--ink)}
+.review-badge{display:block;color:var(--red);font-size:.65rem;font-weight:800;letter-spacing:.14em;margin-right:35px}.review-spotlight-stars{display:block;color:#d1c900;letter-spacing:.08em;margin:9px 0 7px;font-size:1.05rem}
+.review-spotlight-quote{display:block;font:700 1.05rem/1.48 "Playfair Display",serif}.review-spotlight-name{display:block;margin-top:10px;color:var(--muted);font-size:.76rem;font-weight:700}
+.review-spotlight-write{width:100%;border:0;border-top:1px solid var(--line);background:var(--yellow);color:var(--green-dark);font-weight:800;padding:13px 18px;cursor:pointer}
+.review-spotlight-min{position:fixed;left:22px;bottom:22px;z-index:35;width:54px;height:54px;border:3px solid #fff;border-radius:50%;background:var(--red);color:var(--yellow);box-shadow:0 12px 30px rgba(0,20,95,.28);font-size:1.3rem;cursor:pointer}
+@media(max-width:680px){.review-spotlight{left:12px;bottom:12px;width:min(330px,calc(100vw - 24px))}.review-spotlight-min{left:12px;bottom:12px}.ai-chat-launcher{z-index:36}}
 </style>
   
 </head>
@@ -252,6 +271,19 @@ body > footer,
     <form class="ai-chat-form" id="aiChatForm"><input id="aiQuestion" maxlength="500" autocomplete="off" placeholder="Ask a question…" aria-label="Question for the AI assistant"><button type="submit" id="aiSend">Send</button><p class="ai-status" id="aiStatus"><b>AI assistant</b> · English, Kreyòl, Français</p></form>
   </section>
 
+  <aside class="review-spotlight" id="reviewSpotlight" aria-live="polite" aria-label="Featured community review">
+    <div class="review-spotlight-accent" aria-hidden="true"></div>
+    <button class="review-spotlight-close" id="reviewSpotlightClose" type="button" aria-label="Minimize featured review">×</button>
+    <button class="review-spotlight-body" id="reviewSpotlightBody" type="button" aria-label="Open the reviewed business">
+      <span class="review-badge">COMMUNITY REVIEW</span>
+      <span class="review-spotlight-stars" id="reviewSpotlightStars" aria-label="Star rating">★★★★★</span>
+      <q class="review-spotlight-quote" id="reviewSpotlightText"></q>
+      <span class="review-spotlight-name" id="reviewSpotlightName"></span>
+    </button>
+    <button class="review-spotlight-write" id="reviewSpotlightWrite" type="button">View business &amp; write a review</button>
+  </aside>
+  <button class="review-spotlight-min" id="reviewSpotlightMin" type="button" aria-label="Show featured review" hidden>★</button>
+
   <footer><a class="brand" href="#/"><span class="brand-mark"><i></i><i></i><i></i></span><span><b>Haitian Global</b><small>Business Directory</small></span></a><p>Connecting Haitian enterprise across borders.</p><p class="legal">© 2026 Haitian Global Business Directory. Demonstration listings are clearly identified.</p></footer>
   <div class="toast" id="toast" role="status"></div>
   <script>const businesses=[
@@ -319,7 +351,8 @@ function aiSetLanguage(reset=true){const lang=$('#aiLanguage').value,c=aiCopy[la
 function aiLocalAnswer(q,lang){const t=q.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');let key='';if(/dent|dantis/.test(t)){const matches=businesses.filter(b=>b.category==='Dentist');return matches.length?`${matches.map(b=>`${b.name} — ${b.city}, ${b.country}`).join('\n')}`:aiCopy[lang].unknown}if(/law|legal|avocat|avoka/.test(t)){const matches=businesses.filter(b=>b.category==='Lawyer');return matches.length?matches.map(b=>`${b.name} — ${b.city}, ${b.country}`).join('\n'):aiCopy[lang].unknown}if(/restaurant|food|manje/.test(t)){const matches=businesses.filter(b=>b.category==='Restaurant');return matches.length?matches.map(b=>`${b.name} — ${b.city}, ${b.country}`).join('\n'):aiCopy[lang].unknown}if(/qualif|eligible|admiss|listed|listing|inscri|antre nan anye|ki moun/.test(t))key='eligibility';else if(/countr|peyi|pays|state|etat/.test(t))key='countries';else if(/whatsapp|contact/.test(t))key='whatsapp';else if(/china|chine|lachin|product|produit|pwodwi|made|fabri/.test(t))key='products';else if(/review|avis|revizyon|star|zetwal|etoile/.test(t))key='reviews';else if(/how.*list|request.*list|ajout|ajoute|mete biznis|inscription/.test(t))key='list';else if(/mission|purpose|objectif|poukisa|why/.test(t))key='mission';return key?aiAnswers[key][lang]:aiCopy[lang].unknown}
 async function aiAsk(question){const q=String(question||'').trim();if(!q)return;const lang=$('#aiLanguage').value,c=aiCopy[lang];aiAddMessage(q,'user');$('#aiQuestion').value='';const thinking=aiAddMessage('…','bot','thinking');try{if(!AI_CHAT_ENDPOINT.startsWith('https://'))throw new Error('AI endpoint not connected');const res=await fetch(AI_CHAT_ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:q,language:lang})});if(!res.ok)throw new Error('AI request failed');const data=await res.json();thinking.classList.remove('thinking');thinking.textContent=data.answer||aiLocalAnswer(q,lang)}catch(error){thinking.classList.remove('thinking');thinking.textContent=aiLocalAnswer(q,lang);$('#aiStatus').innerHTML=`<b>${c.error}</b>`}}
 function initAIChat(){$('#aiChatLauncher').onclick=()=>{const open=!$('#aiChat').classList.contains('open');$('#aiChat').classList.toggle('open',open);$('#aiChat').setAttribute('aria-hidden',String(!open));$('#aiChatLauncher').setAttribute('aria-expanded',String(open));if(open)$('#aiQuestion').focus()};$('#aiChatClose').onclick=()=>$('#aiChatLauncher').click();$('#aiLanguage').onchange=()=>aiSetLanguage(true);$('#aiChatForm').onsubmit=e=>{e.preventDefault();aiAsk($('#aiQuestion').value)};aiSetLanguage(true)}
-window.showAdminNotice=()=>toast('The production form connects here after Supabase is configured.');function toast(msg){$('#toast').textContent=msg;$('#toast').classList.add('show');setTimeout(()=>$('#toast').classList.remove('show'),3200)}function escapeHTML(v){return String(v).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}init();initAIChat();
+function initReviewSpotlight(){const panel=$('#reviewSpotlight'),mini=$('#reviewSpotlightMin'),body=$('#reviewSpotlightBody'),write=$('#reviewSpotlightWrite'),close=$('#reviewSpotlightClose');const items=businesses.flatMap(b=>(b.reviews||[]).map(r=>({...r,businessId:b.id,businessName:b.name})));if(!items.length){panel.hidden=true;return}let index=0,current=items[0],timer;const paint=()=>{current=items[index];$('#reviewSpotlightStars').textContent='★'.repeat(Math.round(current.rating))+'☆'.repeat(5-Math.round(current.rating));$('#reviewSpotlightText').textContent=current.comment.length>145?current.comment.slice(0,142)+'…':current.comment;$('#reviewSpotlightName').textContent=`${current.name} · ${current.businessName} · Demo review`};const rotate=()=>{index=(index+1)%items.length;paint()};const openBusiness=()=>openProfile(current.businessId);body.onclick=openBusiness;write.onclick=()=>{openBusiness();setTimeout(()=>$('#writeReview')?.click(),180)};close.onclick=()=>{panel.classList.remove('show');panel.hidden=true;mini.hidden=false;clearInterval(timer)};mini.onclick=()=>{mini.hidden=true;panel.hidden=false;requestAnimationFrame(()=>panel.classList.add('show'));timer=setInterval(rotate,8000)};paint();setTimeout(()=>panel.classList.add('show'),850);timer=setInterval(rotate,8000)}
+window.showAdminNotice=()=>toast('The production form connects here after Supabase is configured.');function toast(msg){$('#toast').textContent=msg;$('#toast').classList.add('show');setTimeout(()=>$('#toast').classList.remove('show'),3200)}function escapeHTML(v){return String(v).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}init();initAIChat();initReviewSpotlight();
 </script>
 </body>
 </html>
