@@ -44,7 +44,7 @@
     originalProfile(b);
     if (!demoIds.has(b.id)) {
       const content = document.querySelector('#profileContent');
-      content.innerHTML = content.innerHTML.replaceAll('Demonstration review', 'Approved review').replaceAll('demonstration reviews', 'approved reviews');
+      content.querySelectorAll('small').forEach(node => { node.textContent = node.textContent.replaceAll('Demonstration review', 'Approved review').replaceAll('demonstration reviews', 'approved reviews'); });
     }
   };
   const reviewForm = document.querySelector('#reviewForm');
