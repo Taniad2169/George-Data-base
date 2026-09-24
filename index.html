@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="Mache Haitien Global (Haitian Global Market) connects Haitian merchants with customers across the United States, Canada, France, and Haiti. Search for trusted businesses, or apply to advertise your own — free to list.">
+  <meta name="description" content="Mache Haitien Global (Haitian Global Market) connects Haitian merchants with customers across the United States, Canada, France, Haiti, Brazil, Chile, the Dominican Republic, and Puerto Rico. Search for trusted businesses, or apply to advertise your own — free to list.">
   <meta name="theme-color" content="#4196e8">
 <link rel="canonical" href="https://taniad2169.github.io/George-Data-base/">
 <meta property="og:type" content="website">
@@ -319,7 +319,7 @@ footer .brand-logo{width:68px;height:68px;flex-basis:68px}
 @media(max-width:680px){.brand-logo{width:48px;height:48px;flex-basis:48px}footer .brand-logo{width:60px;height:60px;flex-basis:60px}}
 </style>
   
-<style>.hgd-video-card-inline{border-radius:18px;overflow:hidden;box-shadow:0 18px 40px rgba(18,140,32,.18);background:#000;max-width:440px}.hgd-video-card-inline video{display:block;width:100%;aspect-ratio:4/3;object-fit:cover}</style></head>
+<style>.hgd-video-row{display:flex;flex-wrap:wrap;gap:20px;justify-content:center}.hgd-video-card-inline{border-radius:18px;overflow:hidden;box-shadow:0 18px 40px rgba(18,140,32,.18);background:#000;max-width:440px;width:100%}.hgd-video-card-inline video{display:block;width:100%;aspect-ratio:4/3;object-fit:cover}</style></head>
 <body>
   <a class="skip-link" href="#directory">Skip to business directory</a>
   <header class="site-header">
@@ -402,6 +402,14 @@ footer .brand-logo{width:68px;height:68px;flex-basis:68px}
               <option>Airbnb / Short-Term Rental</option>
               <option>Retail / Shop</option>
               <option>Professional Services</option>
+              <option>Web Designer</option>
+              <option>Web Developer</option>
+              <option>Digital Marketing Agency</option>
+              <option>Social Media Marketing</option>
+              <option>Marketing/Advertising</option>
+              <option>Software Developer</option>
+              <option>Machann Feuille</option>
+              <option>Natural Remedy</option>
               <option>Other</option>
             </select>
           </div>
@@ -415,6 +423,10 @@ footer .brand-logo{width:68px;height:68px;flex-basis:68px}
               <option>Canada</option>
               <option>France</option>
               <option>Haiti</option>
+              <option>Brazil</option>
+              <option>Chile</option>
+              <option>Dominican Republic</option>
+              <option>Puerto Rico</option>
             </select>
           </div>
           <div>
@@ -526,7 +538,10 @@ footer .brand-logo{width:68px;height:68px;flex-basis:68px}
 
     <section class="community-band" id="about">
       <div><p class="section-kicker">BUILT FOR THE COMMUNITY</p><h2>One directory.<br>Four countries.<br><em>Countless connections.</em></h2></div>
-      <div class="hgd-video-card-inline"><video autoplay loop muted playsinline poster="https://taniad2169.github.io/George-Data/george-poster.jpg"><source src="https://taniad2169.github.io/George-Data/george-video.mp4" type="video/mp4"></video></div>
+      <div class="hgd-video-row">
+    <div class="hgd-video-card-inline"><video autoplay loop muted playsinline poster="https://taniad2169.github.io/George-Data/george-poster.jpg"><source src="https://taniad2169.github.io/George-Data/george-video.mp4" type="video/mp4"></video></div>
+    <div class="hgd-video-card-inline"><video autoplay loop muted playsinline poster="https://taniad2169.github.io/George-Data/mache-global-poster-3.jpg"><source src="https://taniad2169.github.io/George-Data/mache-global-video-3.mp4" type="video/mp4"></video></div>
+  </div>
       <p>Every listing is centrally managed to keep information accurate and useful. Business owners do not need an account—updates are handled by the directory team.</p>
     </section>
 
@@ -591,7 +606,8 @@ footer .brand-logo{width:68px;height:68px;flex-basis:68px}
 {id:9,slug:'atelier-noir-jaune-lyon',name:'Atelier Noir & Jaune',category:'Clothing',secondary:['Retail','Vendor'],city:'Lyon',region:'Auvergne-Rhône-Alpes',country:'France',description:'Small-batch apparel and accessories inspired by Haitian craft, color, and contemporary design.',services:['Apparel','Accessories','Custom orders'],languages:['French','Haitian Creole'],phone:'+33472550190',whatsapp:'33472550190',website:'https://example.com',hours:'Wed–Sat · 10:00 AM–7:00 PM',established:2021,mode:'In person & online',featured:false,joined:'2026-09-01'},
 {id:10,slug:'dr-johnson-family-dentistry-fort-lauderdale',name:'Dr. Johnson Family Dentistry',category:'Dentist',secondary:['Medical Services'],city:'Fort Lauderdale',region:'Florida',country:'United States',description:'Friendly preventive and restorative dental care for adults, children, and multigenerational families.',services:['Dental exams','Preventive care','Restorative dentistry'],languages:['English','Haitian Creole'],phone:'+19545550191',whatsapp:'19545550191',website:'https://example.com',hours:'Mon–Fri · 8:00 AM–5:00 PM',established:2016,mode:'In person',featured:true,joined:'2026-09-10',reviews:[{name:'Marie P.',rating:5,date:'September 8, 2026',comment:'The staff explained every step clearly and made the appointment feel comfortable. This is demonstration review content.'},{name:'Jean L.',rating:4,date:'September 4, 2026',comment:'Easy scheduling, a welcoming office, and thoughtful service. This is demonstration review content.'}]}
 ];
-const categories=[...new Set(businesses.flatMap(b=>[b.category,...b.secondary]))].sort(),countries=['United States','Canada','France','Haiti'];
+const knownCategories=['Restaurant','Dentist','Lawyer','Stores & Retail','Real Estate','Beauty & Hair','Financial Services','Professional Services','Short-Term Rental','Web Designer','Web Developer','Digital Marketing Agency','Social Media Marketing','Marketing/Advertising','Software Developer','Machann Feuille','Natural Remedy'];
+const categories=[...new Set([...knownCategories, ...businesses.flatMap(b=>[b.category,...b.secondary])])].sort(),countries=['United States','Canada','France','Haiti','Brazil','Chile','Dominican Republic','Puerto Rico'];
 let state={query:'',category:'',country:'',location:'',sort:'featured',page:1};
 
 // Supabase config - fill these in once your project is created (see
@@ -635,11 +651,13 @@ async function loadApprovedBusinesses(){
   }catch(err){ /* directory still works with existing listings if this fails */ }
 }
  const pageSize=6;
-const analyticsGroups=['Restaurant','Dentist','Lawyer','Stores & Retail','Real Estate','Beauty & Hair','Financial Services','Professional Services','Short-Term Rental','Other'];
+const analyticsGroups=['Restaurant','Dentist','Lawyer','Stores & Retail','Real Estate','Beauty & Hair','Financial Services','Professional Services','Short-Term Rental','Web Designer','Web Developer','Digital Marketing Agency','Social Media Marketing','Marketing/Advertising','Software Developer','Machann Feuille','Natural Remedy','Other'];
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
-async function init(){if(new URLSearchParams(location.search).get('admin')==='preview')$('#adminOpen').hidden=false;categories.forEach(x=>$('#category').add(new Option(x,x)));countries.forEach(x=>$('#country').add(new Option(x,x)));['Restaurant','Dentist','Lawyer','Real Estate','Beauty'].forEach(x=>{const b=document.createElement('button');b.type='button';b.textContent=x;b.onclick=()=>{state.category=x;$('#category').value=x;state.page=1;trackSearch(x);render()};$('#quickFilters').append(b)});await loadApprovedBusinesses();render();bind();route()}
+async function init(){if(new URLSearchParams(location.search).get('admin')==='preview')$('#adminOpen').hidden=false;categories.forEach(x=>$('#category').add(new Option(x,x)));countries.forEach(x=>$('#country').add(new Option(x,x)));['Restaurant','Dentist','Lawyer','Real Estate','Beauty','Web Designer','Web Developer','Digital Marketing Agency','Social Media Marketing','Marketing/Advertising','Software Developer','Machann Feuille','Natural Remedy'].forEach(x=>{const b=document.createElement('button');b.type='button';b.textContent=x;b.onclick=()=>{state.category=x;$('#category').value=x;state.page=1;trackSearch(x);render()};$('#quickFilters').append(b)});await loadApprovedBusinesses();render();bind();route()}
 function bind(){$('#searchForm').onsubmit=e=>{e.preventDefault();state={...state,query:$('#query').value.trim(),category:$('#category').value,country:$('#country').value,location:$('#location').value.trim(),page:1};trackSearch(state.category||state.query);render();$('#directory').scrollIntoView({behavior:'smooth'})};$('#sort').onchange=e=>{state.sort=e.target.value;render()};$('#clearSearch').onclick=clear;$('#adminOpen').onclick=openAdminLogin;$('#adminClose').onclick=()=>$('#adminDialog').close();$$('.admin-nav').forEach(b=>b.onclick=()=>{$$('.admin-nav').forEach(x=>x.classList.remove('active'));b.classList.add('active');b.dataset.panel==='analytics'?renderAnalytics():renderAdmin(b.dataset.panel)});$('#profileDialog').addEventListener('click',e=>{if(e.target===$('#profileDialog'))$('#profileDialog').close()});window.addEventListener('hashchange',route);$$('#starInput button').forEach(b=>b.onclick=()=>{$$('#starInput button').forEach(x=>x.classList.toggle('on',+x.dataset.star<=+b.dataset.star));$('#starInput').dataset.value=b.dataset.star});$('#reviewForm').onsubmit=e=>{e.preventDefault();if(!$('#starInput').dataset.value){toast('Please select a star rating.');return}const pending=JSON.parse(localStorage.getItem('hgbd_pending_reviews')||'[]');pending.push({businessId:+$('#reviewDialog').dataset.businessId,name:$('#reviewerName').value.trim(),rating:+$('#starInput').dataset.value,comment:$('#reviewText').value.trim(),status:'pending',submittedAt:new Date().toISOString()});localStorage.setItem('hgbd_pending_reviews',JSON.stringify(pending));$('#reviewDialog').close();toast('Thank you. Your review is saved and waiting for approval.');e.target.reset();delete $('#starInput').dataset.value;$$('#starInput button').forEach(x=>x.classList.remove('on'))}}
-function filtered(){const q=state.query.toLowerCase(),loc=state.location.toLowerCase();const catMatch=categories.find(c=>c.toLowerCase()===q);let r=businesses.filter(b=>(!q||(catMatch?(b.category===catMatch||b.secondary.includes(catMatch)):[b.name,b.category,b.description,...b.services].join(' ').toLowerCase().includes(q)))&&(!state.category||b.category===state.category||b.secondary.includes(state.category))&&(!state.country||b.country===state.country)&&(!loc||[b.city,b.region].join(' ').toLowerCase().includes(loc)));return r.sort((a,b)=>state.sort==='name'?a.name.localeCompare(b.name):state.sort==='newest'?b.joined.localeCompare(a.joined):Number(b.featured)-Number(a.featured)||a.name.localeCompare(b.name))}
+const categorySynonyms=[['Web Designer','Web Developer']];
+function expandCategoryMatch(cat){const group=categorySynonyms.find(g=>g.includes(cat));return group||[cat]}
+function filtered(){const q=state.query.toLowerCase(),loc=state.location.toLowerCase();const catMatch=categories.find(c=>c.toLowerCase()===q);const matchGroup=catMatch?expandCategoryMatch(catMatch):null;let r=businesses.filter(b=>(!q||(catMatch?(matchGroup.includes(b.category)||b.secondary.some(s=>matchGroup.includes(s))):[b.name,b.category,b.description,...b.services].join(' ').toLowerCase().includes(q)))&&(!state.category||(()=>{const g=expandCategoryMatch(state.category);return g.includes(b.category)||b.secondary.some(s=>g.includes(s))})())&&(!state.country||b.country===state.country)&&(!loc||[b.city,b.region].join(' ').toLowerCase().includes(loc)));return r.sort((a,b)=>state.sort==='name'?a.name.localeCompare(b.name):state.sort==='newest'?b.joined.localeCompare(a.joined):Number(b.featured)-Number(a.featured)||a.name.localeCompare(b.name))}
 function render(){const all=filtered(),pages=Math.max(1,Math.ceil(all.length/pageSize));if(state.page>pages)state.page=1;const shown=all.slice((state.page-1)*pageSize,state.page*pageSize);$('#resultCount').textContent=`${all.length} ${all.length===1?'listing':'listings'}`;$('#resultsTitle').textContent=state.category?`${state.category} businesses`:'Explore Haitian-owned businesses';$('#businessGrid').innerHTML=shown.map(card).join('');$('#businessGrid').hidden=!shown.length;$('#emptyState').hidden=!!shown.length;$$('.view-profile').forEach(b=>b.onclick=()=>openProfile(+b.dataset.id));renderChips();$('#pagination').innerHTML=pages>1?Array.from({length:pages},(_,i)=>`<button class="${state.page===i+1?'active':''}" data-page="${i+1}">${i+1}</button>`).join(''):'';$$('#pagination button').forEach(b=>b.onclick=()=>{state.page=+b.dataset.page;render();$('#directory').scrollIntoView({behavior:'smooth'})})}
 function card(b){const r=reviewSummary(b);return `<article class="card"><div class="card-top"></div><div class="card-body"><span class="badge">${escapeHTML(b.category)}</span><h3>${escapeHTML(b.name)}</h3><p class="location">${escapeHTML(b.city)}, ${escapeHTML(b.region)} · ${escapeHTML(b.country)}</p><p class="description">${escapeHTML(b.description)}</p></div><div class="card-meta"><span class="${r.count?'rating-mini':'status-new'}">${r.count?`${stars(r.average)} ${r.average.toFixed(1)} (${r.count})`:'No reviews yet'}</span><button class="view-profile" data-id="${b.id}">View profile</button></div></article>`}
 function renderChips(){const f=[['query',state.query],['category',state.category],['country',state.country],['location',state.location]].filter(x=>x[1]);$('#activeFilters').innerHTML=f.map(([k,v])=>`<button data-key="${k}">${escapeHTML(v)} ×</button>`).join('');$$('#activeFilters button').forEach(b=>b.onclick=()=>{state[b.dataset.key]='';const el=$('#'+b.dataset.key);if(el)el.value='';render()})}
