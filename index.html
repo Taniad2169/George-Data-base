@@ -319,7 +319,8 @@ footer .brand-logo{width:68px;height:68px;flex-basis:68px}
 @media(max-width:680px){.brand-logo{width:48px;height:48px;flex-basis:48px}footer .brand-logo{width:60px;height:60px;flex-basis:60px}}
 </style>
   
-<style>.hgd-video-row{display:flex;flex-wrap:wrap;gap:20px;justify-content:center}.hgd-video-card-inline{border-radius:18px;overflow:hidden;box-shadow:0 18px 40px rgba(18,140,32,.18);background:#000;max-width:440px;width:100%}.hgd-video-card-inline video{display:block;width:100%;aspect-ratio:4/3;object-fit:cover}</style></head>
+<style>.hgd-video-row{display:flex;flex-wrap:wrap;gap:20px;justify-content:center}.hgd-video-card-inline{border-radius:18px;overflow:hidden;box-shadow:0 18px 40px rgba(18,140,32,.18);background:#000;max-width:440px;width:100%}.hgd-video-card-inline video{display:block;width:100%;aspect-ratio:4/3;object-fit:cover}</style><script>window.mgFirebaseReady=new Promise(function(res,rej){window.__mgResolve=res;setTimeout(function(){rej(new Error("Firebase did not load"))},20000)});window.mgFirebaseReady.catch(function(){});</script>
+</head>
 <body>
   <a class="skip-link" href="#directory">Skip to business directory</a>
   <header class="site-header">
@@ -513,12 +514,6 @@ footer .brand-logo{width:68px;height:68px;flex-basis:68px}
 <script>
 (function(){
   const WHATSAPP_NUMBER = '16468988279';
-  // Update these with your Supabase project's URL and anon (public) key
-  // once you've created the project and table - see setup notes in the
-  // separate supabase-setup.md file. Every sign-up is permanently saved
-  // to your Supabase database this way.
-  const SUPABASE_URL = 'https://fnoizxstszexmtjonlgw.supabase.co';
-  const SUPABASE_ANON_KEY = 'sb_publishable_PB3BtFz-iCkQ-CE_5Z3v3g_SaUa5lcf';
   const WEBSITE_LEAD_FORMSPREE_URL = 'https://formspree.io/f/xjyvvkvn';
 
   const form = document.getElementById('vendorForm');
@@ -577,20 +572,7 @@ footer .brand-logo{width:68px;height:68px;flex-basis:68px}
     const slug = business.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') + '-' + Date.now().toString(36);
     const payload = { name: business, slug, category: finalCategory, country, city: location, region: state, email, phone, website, description };
 
-    if (SUPABASE_URL.indexOf('PASTE_YOUR') === -1 && SUPABASE_ANON_KEY.indexOf('PASTE_YOUR') === -1) {
-      try {
-        await fetch(SUPABASE_URL + '/rest/v1/businesses', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'apikey': SUPABASE_ANON_KEY,
-            'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
-            'Prefer': 'return=minimal'
-          },
-          body: JSON.stringify(payload)
-        });
-      } catch (err) { /* still proceed even if saving fails */ }
-    }
+    // Business profiles are created by the site owner in the admin panel, not by visitors.
 
     try {
       let leadPayload;
@@ -733,21 +715,14 @@ const knownCategories=['Restaurant','Dentist','Lawyer','Stores & Retail','Real E
 const categories=[...new Set([...knownCategories, ...businesses.flatMap(b=>[b.category,...b.secondary])])].sort(),countries=['United States','Canada','France','Haiti','Brazil','Chile','Dominican Republic','Puerto Rico'];
 let state={query:'',category:'',country:'',location:'',sort:'featured',page:1};
 
-// Supabase config - fill these in once your project is created (see
-// supabase-setup.md). Approved vendor sign-ups load and merge into
-// the businesses array below, so they show up in search automatically.
-const SUPABASE_URL='https://fnoizxstszexmtjonlgw.supabase.co';
-const SUPABASE_ANON_KEY='sb_publishable_PB3BtFz-iCkQ-CE_5Z3v3g_SaUa5lcf';
-const SUPABASE_READY=SUPABASE_URL.indexOf('PASTE_YOUR')===-1&&SUPABASE_ANON_KEY.indexOf('PASTE_YOUR')===-1;
+// Directory data lives in Firebase (Firestore). Published businesses load into the
+// businesses array below, so they show up in search automatically.
 
 async function loadApprovedBusinesses(){
-  if(!SUPABASE_READY)return;
   try{
-    const res=await fetch(SUPABASE_URL+'/rest/v1/businesses?status=eq.published&select=*',{
-      headers:{'apikey':SUPABASE_ANON_KEY,'Authorization':'Bearer '+SUPABASE_ANON_KEY}
-    });
-    if(!res.ok)return;
-    const rows=await res.json();
+    await window.mgFirebaseReady;
+    const rows=await window.mgFirebase.listPublished();
+    if(!rows)return;
     const mapped=rows.map(r=>({
       id:100000+r.id,
       slug:r.slug||(r.business||r.name||'').toLowerCase().replace(/[^a-z0-9]+/g,'-'),
@@ -796,19 +771,19 @@ function simpleTable(head,rows){return `<table class="admin-table"><thead><tr>${
 function analyticsData(){try{const saved=JSON.parse(localStorage.getItem('hgbd_search_analytics')||'{}');return Object.fromEntries(analyticsGroups.map(k=>[k,Number(saved[k])||0]))}catch{return Object.fromEntries(analyticsGroups.map(k=>[k,0]))}}
 function mapSearchGroup(term=''){const t=term.toLowerCase();if(/dent|dental/.test(t))return'Dentist';if(/law|legal|attorney|immigration/.test(t))return'Lawyer';if(/restaurant|food|cater|bakery|grocery/.test(t))return'Restaurant';if(/retail|store|shop|cloth|vendor/.test(t))return'Stores & Retail';if(/real estate|realt|mortgage/.test(t))return'Real Estate';if(/beauty|hair|salon|barber/.test(t))return'Beauty & Hair';if(/tax|account|financial|insurance/.test(t))return'Financial Services';if(/professional|entrepreneur|contract|clean|transport/.test(t))return'Professional Services';if(/airbnb|rental|short-term|stay/.test(t))return'Short-Term Rental';return'Other'}
 function trackSearch(term){const meaningful=String(term||'').trim();if(!meaningful)return;const data=analyticsData(),key=mapSearchGroup(meaningful);data[key]=(data[key]||0)+1;localStorage.setItem('hgbd_search_analytics',JSON.stringify(data))}
-function renderAnalytics(){const data=analyticsData(),rows=Object.entries(data).sort((a,b)=>b[1]-a[1]),total=rows.reduce((n,x)=>n+x[1],0),peak=rows[0]&&rows[0][1]?rows[0][0]:'No searches yet',max=Math.max(1,...rows.map(x=>x[1]));$('#adminPanel').innerHTML=`<div class="admin-topline"><div><p class="section-kicker">SEARCH DEMAND</p><h2>What visitors are looking for</h2></div><button onclick="exportAnalytics()">Export CSV</button></div><p class="analytics-note">Live searches recorded on this browser. Once Supabase is connected, this same report can combine searches from every visitor without exposing personal information.</p><div class="analytics-stats"><div><small>Total searches</small><b>${total}</b></div><div><small>Top category</small><b>${peak}</b></div><div><small>Categories tracked</small><b>${rows.length}</b></div></div><div class="analytics-chart" role="img" aria-label="Horizontal bar chart of directory searches by category">${rows.map(([name,value])=>`<div class="analytics-row"><span>${escapeHTML(name)}</span><div class="bar-track"><i style="width:${value?Math.max(4,value/max*100):0}%"></i></div><b>${value}</b></div>`).join('')}</div><p class="chart-footnote">Counts increase when someone submits a directory search or selects a popular category.</p>`}
+function renderAnalytics(){const data=analyticsData(),rows=Object.entries(data).sort((a,b)=>b[1]-a[1]),total=rows.reduce((n,x)=>n+x[1],0),peak=rows[0]&&rows[0][1]?rows[0][0]:'No searches yet',max=Math.max(1,...rows.map(x=>x[1]));$('#adminPanel').innerHTML=`<div class="admin-topline"><div><p class="section-kicker">SEARCH DEMAND</p><h2>What visitors are looking for</h2></div><button onclick="exportAnalytics()">Export CSV</button></div><p class="analytics-note">Live searches recorded on this browser. These counts stay on this device and contain no personal information.</p><div class="analytics-stats"><div><small>Total searches</small><b>${total}</b></div><div><small>Top category</small><b>${peak}</b></div><div><small>Categories tracked</small><b>${rows.length}</b></div></div><div class="analytics-chart" role="img" aria-label="Horizontal bar chart of directory searches by category">${rows.map(([name,value])=>`<div class="analytics-row"><span>${escapeHTML(name)}</span><div class="bar-track"><i style="width:${value?Math.max(4,value/max*100):0}%"></i></div><b>${value}</b></div>`).join('')}</div><p class="chart-footnote">Counts increase when someone submits a directory search or selects a popular category.</p>`}
 window.exportAnalytics=()=>{const data=analyticsData(),csv='Category,Searches\n'+Object.entries(data).map(([k,v])=>`"${k.replaceAll('"','""')}",${v}`).join('\n'),a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='haitian-directory-search-analytics.csv';a.click();URL.revokeObjectURL(a.href)};
 function adminGreeting(){const h=new Date().getHours(),part=h<12?'Good morning':h<18?'Good afternoon':'Good evening',n=sessionStorage.getItem('hgbd_admin_name');return n?`${part}, ${escapeHTML(n)}.`:`${part}.`}
-function adminLogout(){const t=sessionStorage.getItem('hgbd_admin_session');if(t&&SUPABASE_READY)fetch(SUPABASE_URL+'/auth/v1/logout',{method:'POST',headers:{'apikey':SUPABASE_ANON_KEY,'Authorization':'Bearer '+t}}).catch(()=>{});sessionStorage.removeItem('hgbd_admin_session');sessionStorage.removeItem('hgbd_admin_name');$('#adminDialog').close();toast('Logged out.')}
+function adminLogout(){const t=sessionStorage.getItem('hgbd_admin_session');try{if(window.mgFirebase)window.mgFirebase.signOut()}catch(err){}sessionStorage.removeItem('hgbd_admin_session');sessionStorage.removeItem('hgbd_admin_name');$('#adminDialog').close();toast('Logged out.')}
 function adminCredentials(){try{return JSON.parse(localStorage.getItem('hgbd_admin_credentials')||'null')}catch{return null}}
 async function hashPassword(value){const bytes=new TextEncoder().encode(value),digest=await crypto.subtle.digest('SHA-256',bytes);return[...new Uint8Array(digest)].map(x=>x.toString(16).padStart(2,'0')).join('')}
 function openAdminLogin(){renderAdminLogin('login');$('#adminLoginDialog').showModal()}
 function loginShell(body){return `<button class="dialog-close" id="loginClose" aria-label="Close">×</button><div class="login-brand"><span>HG</span><div><b>Owner Administration</b><small>Directory management demo</small></div></div>${body}<p class="demo-security">Demo access is stored only in this browser. Production recovery will use George’s verified email and a time-limited reset link.</p>`}
-function renderAdminLogin(mode){const content=$('#adminLoginContent');if(mode==='forgot-password')content.innerHTML=loginShell(`<p class="section-kicker">PASSWORD RECOVERY</p><h2>Reset your password</h2><p>Enter the email you use to log in and we'll send you a link to reset your password.</p><form id="forgotPasswordForm"><label>Email<input id="forgotEmail" type="email" required></label><p class="login-error" id="forgotError"></p><p class="login-success" id="forgotSuccess"></p><button class="primary" type="submit">Send reset link</button><button class="text-button" id="backToLogin" type="button">Back to login</button></form>`);else if(mode==='forgot-username')content.innerHTML=loginShell(`<p class="section-kicker">FORGOT YOUR EMAIL?</p><h2>Your login is your email</h2><p>There's no separate username - you log in with the email address used to set up this admin account. If you're not sure which email that is, contact whoever originally set up this directory's admin access.</p><button class="text-button" id="backToLogin" type="button">Back to login</button>`);else content.innerHTML=loginShell(`<p class="section-kicker">OWNER LOGIN</p><h2>Welcome back</h2><form id="ownerLoginForm"><label>Email<input id="loginUsername" type="email" required autocomplete="username"></label><label>Password<input id="loginPassword" type="password" required autocomplete="current-password"></label><p class="login-error" id="loginError"></p><button class="primary" type="submit">Open admin</button><div class="login-links"><button class="text-button" id="forgotPassword" type="button">Forgot password?</button><button class="text-button" id="forgotUsername" type="button">Forgot your email?</button></div></form>`);$('#loginClose').onclick=()=>$('#adminLoginDialog').close();if($('#forgotPassword'))$('#forgotPassword').onclick=()=>renderAdminLogin('forgot-password');if($('#forgotUsername'))$('#forgotUsername').onclick=()=>renderAdminLogin('forgot-username');if($('#backToLogin'))$('#backToLogin').onclick=()=>renderAdminLogin('login');if($('#ownerLoginForm'))$('#ownerLoginForm').onsubmit=verifyOwnerLogin;if($('#forgotPasswordForm'))$('#forgotPasswordForm').onsubmit=sendPasswordReset}
+function renderAdminLogin(mode){const content=$('#adminLoginContent');if(mode==='forgot-password')content.innerHTML=loginShell(`<p class="section-kicker">PASSWORD RECOVERY</p><h2>Reset your password</h2><p>Enter the email you use to log in and we'll send you a link to reset your password.</p><form id="forgotPasswordForm"><label>Email<input id="forgotEmail" type="email" required></label><p class="login-error" id="forgotError"></p><p class="login-success" id="forgotSuccess"></p><button class="primary" type="submit">Send reset link</button><button class="text-button" id="backToLogin" type="button">Back to login</button></form>`);else if(mode==='forgot-username')content.innerHTML=loginShell(`<p class="section-kicker">FORGOT YOUR EMAIL?</p><h2>Your login is your email</h2><p>There's no separate username - you log in with the email address used to set up this admin account. If you're not sure which email that is, contact whoever originally set up this directory's admin access.</p><button class="text-button" id="backToLogin" type="button">Back to login</button>`);else content.innerHTML=loginShell(`<p class="section-kicker">OWNER LOGIN</p><h2>Welcome back</h2><form id="ownerLoginForm"><p>Sign in with the Google account that owns this directory.</p><p class="login-error" id="loginError"></p><button class="primary" type="submit">Sign in with Google</button></form>`);$('#loginClose').onclick=()=>$('#adminLoginDialog').close();if($('#forgotPassword'))$('#forgotPassword').onclick=()=>renderAdminLogin('forgot-password');if($('#forgotUsername'))$('#forgotUsername').onclick=()=>renderAdminLogin('forgot-username');if($('#backToLogin'))$('#backToLogin').onclick=()=>renderAdminLogin('login');if($('#ownerLoginForm'))$('#ownerLoginForm').onsubmit=verifyOwnerLogin;if($('#forgotPasswordForm'))$('#forgotPasswordForm').onsubmit=sendPasswordReset}
 
-async function sendPasswordReset(e){e.preventDefault();const errEl=$('#forgotError'),okEl=$('#forgotSuccess');errEl.textContent='';okEl.textContent='';if(!SUPABASE_READY){errEl.textContent='Password recovery is not configured yet.';return}const email=$('#forgotEmail').value.trim();try{const res=await fetch(SUPABASE_URL+'/auth/v1/recover',{method:'POST',headers:{'Content-Type':'application/json','apikey':SUPABASE_ANON_KEY},body:JSON.stringify({email})});if(res.ok){okEl.textContent='If that email has an admin account, a reset link has been sent.';$('#forgotPasswordForm').reset()}else{errEl.textContent='Something went wrong. Please try again.'}}catch(err){errEl.textContent='Could not reach the login server. Please try again.'}}
+async function sendPasswordReset(e){e.preventDefault();const errEl=$('#forgotError');if(errEl)errEl.textContent='There is no password. Sign in with your Google account.'}
 async function saveOwnerSetup(e){e.preventDefault();const username=$('#setupUsername').value.trim(),password=$('#setupPassword').value,confirm=$('#setupConfirm').value;if(!/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{5,30}$/.test(username)){toast('Username must contain letters and numbers.');return}if(password!==confirm){toast('The passwords do not match.');return}localStorage.setItem('hgbd_admin_credentials',JSON.stringify({username,passwordHash:await hashPassword(password)}));toast('Owner login created.');renderAdminLogin('login')}
-async function verifyOwnerLogin(e){e.preventDefault();$('#loginError').textContent='';if(!SUPABASE_READY){$('#loginError').textContent='Admin login is not configured yet.';return}try{const res=await fetch(SUPABASE_URL+'/auth/v1/token?grant_type=password',{method:'POST',headers:{'Content-Type':'application/json','apikey':SUPABASE_ANON_KEY},body:JSON.stringify({email:$('#loginUsername').value.trim(),password:$('#loginPassword').value})});const data=await res.json();if(!res.ok||!data.access_token){$('#loginError').textContent='The email or password is incorrect.';return}const chk=await fetch(SUPABASE_URL+'/rest/v1/admins?select=display_name',{headers:{'apikey':SUPABASE_ANON_KEY,'Authorization':'Bearer '+data.access_token}});const who=chk.ok?await chk.json():[];if(!who.length){$('#loginError').textContent='This account does not have admin access.';return}sessionStorage.setItem('hgbd_admin_session',data.access_token);sessionStorage.setItem('hgbd_admin_name',who[0].display_name||'');$('#adminLoginDialog').close();$('#adminDialog').showModal();$$('.admin-nav').forEach(x=>x.classList.toggle('active',x.dataset.panel==='analytics'));renderAnalytics()}catch(err){$('#loginError').textContent='Could not reach the login server. Please try again.'}}
+async function verifyOwnerLogin(e){e.preventDefault();$('#loginError').textContent='';try{await window.mgFirebaseReady;const who=await window.mgFirebase.signInAdmin();if(!who){$('#loginError').textContent='This Google account does not have admin access.';return}sessionStorage.setItem('hgbd_admin_session','firebase');sessionStorage.setItem('hgbd_admin_name',who.name||'');$('#adminLoginDialog').close();$('#adminDialog').showModal();$$('.admin-nav').forEach(x=>x.classList.toggle('active',x.dataset.panel==='analytics'));renderAnalytics()}catch(err){$('#loginError').textContent='Could not reach the login server. Please try again.'}}
 async function resetOwnerPassword(e){e.preventDefault();const saved=adminCredentials(),username=$('#resetUsername').value.trim(),password=$('#resetPassword').value,confirm=$('#resetConfirm').value;if(!saved||saved.username.toLowerCase()!==username.toLowerCase()){toast('That owner username was not found.');return}if(password!==confirm){toast('The passwords do not match.');return}localStorage.setItem('hgbd_admin_credentials',JSON.stringify({username:saved.username,passwordHash:await hashPassword(password)}));toast('Password updated. You can log in now.');renderAdminLogin('login')}
 const AI_CHAT_ENDPOINT=window.HAITIAN_DIRECTORY_AI_ENDPOINT||'/api/directory-chat';
 const aiCopy={
@@ -906,12 +881,12 @@ function initReviewSpotlight(){const panel=$('#reviewSpotlight'),mini=$('#review
 function initReviewDialogClose(){const dialog=$('#reviewDialog'),closeButton=dialog.querySelector('.dialog-close');closeButton.type='button';closeButton.onclick=e=>{e.preventDefault();e.stopPropagation();dialog.close()};dialog.addEventListener('click',e=>{if(e.target===dialog)dialog.close()})}
 function initCompliance(){const root=document.documentElement,panel=$('#a11yPanel'),launcher=$('#a11yLauncher'),banner=$('#privacyBanner'),a11yKey='hgbd_accessibility',privacyKey='hgbd_privacy_choice',defaults={large:false,contrast:false,readable:false,links:false,spacing:false,motion:false};let savedSettings={...defaults},settings={...defaults};try{savedSettings={...defaults,...JSON.parse(localStorage.getItem(a11yKey)||'{}')}}catch(error){}settings={...savedSettings};const applyA11y=()=>{$$('[data-a11y]').forEach(button=>{const key=button.dataset.a11y,active=!!settings[key];root.classList.toggle(`a11y-${key}`,active);button.setAttribute('aria-pressed',String(active))})};const togglePanel=open=>{if(open){settings={...savedSettings};applyA11y()}else{settings={...savedSettings};applyA11y()}panel.classList.toggle('open',open);panel.setAttribute('aria-hidden',String(!open));launcher.setAttribute('aria-expanded',String(open));if(open)$('#a11yClose').focus()};$$('[data-a11y]').forEach(button=>button.onclick=()=>{const key=button.dataset.a11y;settings[key]=!settings[key];applyA11y()});$('#a11yReset').onclick=()=>{settings={...defaults};applyA11y()};$('#a11ySave').onclick=()=>{savedSettings={...settings};try{localStorage.setItem(a11yKey,JSON.stringify(savedSettings))}catch(error){}togglePanel(false);launcher.focus();toast('Accessibility preferences saved.')};launcher.onclick=()=>togglePanel(!panel.classList.contains('open'));$('#a11yClose').onclick=()=>{togglePanel(false);launcher.focus()};$$('[data-open-legal]').forEach(button=>button.onclick=()=>$('#'+button.dataset.openLegal).showModal());$$('[data-legal-close]').forEach(button=>button.onclick=()=>button.closest('dialog').close());$$('.legal-dialog').forEach(dialog=>dialog.addEventListener('click',event=>{if(event.target===dialog)dialog.close()}));const savePrivacy=choice=>{try{localStorage.setItem(privacyKey,choice)}catch(error){}banner.hidden=true;toast(choice==='all'?'Optional technologies accepted.':'Optional technologies rejected.')};$('#privacyAccept').onclick=()=>savePrivacy('all');$('#privacyEssential').onclick=()=>savePrivacy('essential');$('#privacyDetails').onclick=()=>$('#privacyDialog').showModal();$('#privacyChoices').onclick=()=>{banner.hidden=false;$('#privacyEssential').focus()};let privacyChoice='';try{privacyChoice=localStorage.getItem(privacyKey)||''}catch(error){}banner.hidden=!!privacyChoice;applyA11y()}
 function initReadAloud(){const button=$('#a11yRead');if(!('speechSynthesis'in window)){button.disabled=true;button.textContent='Read aloud unavailable';return}let speaking=false,chunks=[],position=0;const reset=()=>{speaking=false;position=0;chunks=[];button.setAttribute('aria-pressed','false');button.textContent='🔊 Read page aloud'};const next=()=>{if(!speaking||position>=chunks.length){reset();return}const utterance=new SpeechSynthesisUtterance(chunks[position++]);utterance.lang=document.documentElement.lang||'en-US';utterance.rate=.95;utterance.onend=next;utterance.onerror=reset;speechSynthesis.speak(utterance)};const collectText=()=>{const openDialog=document.querySelector('dialog[open]');if(openDialog)return openDialog.innerText;return ['.search-stage','.directory-wrap','.community-band','.how','footer'].map(selector=>document.querySelector(selector)?.innerText||'').join('. ')};button.onclick=()=>{if(speaking){speechSynthesis.cancel();reset();return}const text=collectText().replace(/\s+/g,' ').trim();if(!text){toast('There is no readable content on this page.');return}chunks=text.match(/.{1,220}(?:[.!?](?:\s|$)|\s|$)/g)||[text];speaking=true;button.setAttribute('aria-pressed','true');button.textContent='■ Stop reading';speechSynthesis.cancel();next()};window.addEventListener('beforeunload',()=>speechSynthesis.cancel())}
-async function adminFetch(path,options={}){const token=sessionStorage.getItem('hgbd_admin_session');const headers=Object.assign({'Content-Type':'application/json','apikey':SUPABASE_ANON_KEY,'Authorization':'Bearer '+(token||SUPABASE_ANON_KEY)},options.headers||{});return fetch(SUPABASE_URL+'/rest/v1/'+path,Object.assign({},options,{headers}))}
+async function adminFetch(path,options={}){await window.mgFirebaseReady;return window.mgFirebase.adminRequest(path,options||{})}
 
 async function renderBusinessesAdminPanel(){let rows=[];try{const res=await adminFetch('businesses?select=*&order=id.desc');if(res.ok)rows=await res.json();else{$('#adminPanel').innerHTML='<p class="section-kicker">MANAGE RECORDS</p><h2>Businesses</h2><p>Could not load businesses. Your admin session may have expired - please log out and back in.</p>';return}}catch(err){$('#adminPanel').innerHTML='<p class="section-kicker">MANAGE RECORDS</p><h2>Businesses</h2><p>Could not reach the database.</p>';return}
 window.__adminBusinesses=rows;
 const rowsHtml=rows.map(r=>{const statusPill=r.status==='published'?'<span class="pill">Published</span>':'<span class="pill warn">'+escapeHTML(r.status||'draft')+'</span>';const toggleLabel=r.status==='published'?'Unpublish':'Publish';return `<tr><td><b>${escapeHTML(r.name||'')}</b><br><small>${escapeHTML(r.category||'')}</small></td><td>${escapeHTML(r.city||'')}, ${escapeHTML(r.country||'')}</td><td>${statusPill}</td><td>${escapeHTML(r.phone||'')}</td><td style="white-space:nowrap"><button class="outline-button" style="padding:6px 10px;font-size:.7rem" onclick="toggleBusinessStatus(${r.id},'${r.status||'draft'}')">${toggleLabel}</button> <button class="outline-button" style="padding:6px 10px;font-size:.7rem" onclick="openEditBusiness(${r.id})">Edit</button> <button class="outline-button" style="padding:6px 10px;font-size:.7rem;border-color:#c0392b;color:#c0392b" onclick="deleteBusinessRow(${r.id})">Delete</button></td></tr>`}).join('');
-$('#adminPanel').innerHTML=`<div class="admin-topline"><div><p class="section-kicker">MANAGE RECORDS</p><h2>Businesses (${rows.length})</h2></div></div><table class="admin-table"><thead><tr><th>Business</th><th>Location</th><th>Status</th><th>Phone</th><th>Actions</th></tr></thead><tbody>${rowsHtml||'<tr><td colspan="5">No businesses yet.</td></tr>'}</tbody></table><div id="editBusinessBox"></div>`}
+$('#adminPanel').innerHTML=`<div class="admin-topline"><div><p class="section-kicker">MANAGE RECORDS</p><h2>Businesses (${rows.length})</h2></div><button class="primary" type="button" onclick="addBusinessDraft()">+ Add business</button></div><table class="admin-table"><thead><tr><th>Business</th><th>Location</th><th>Status</th><th>Phone</th><th>Actions</th></tr></thead><tbody>${rowsHtml||'<tr><td colspan="5">No businesses yet.</td></tr>'}</tbody></table><div id="editBusinessBox"></div>`}
 
 async function toggleBusinessStatus(id,currentStatus){const newStatus=currentStatus==='published'?'draft':'published';try{const res=await adminFetch('businesses?id=eq.'+id,{method:'PATCH',headers:{'Prefer':'return=minimal'},body:JSON.stringify({status:newStatus})});if(res.ok){toast(newStatus==='published'?'Business published.':'Business unpublished.');renderBusinessesAdminPanel()}else{toast('Could not update status.')}}catch(err){toast('Could not reach the database.')}}
 
@@ -993,6 +968,64 @@ html{scroll-behavior:smooth}
   window.addEventListener("hashchange", openRachelFromLink);
   window.addEventListener("load", function () { setTimeout(openRachelFromLink, 400); });
 })();
+</script>
+<script type="module">
+/* Firebase (Firestore + Google sign-in) for the directory. Visitors can only read published listings. Only the owner can sign in and change anything. */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, doc, getDocs, getDoc, setDoc, updateDoc, deleteDoc, query, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+const CFG = {"apiKey":"AIzaSyARtUUYY0n7Am5Hw8WeH-UUgohxycxuyIY","authDomain":"mache-haitien-global-george.firebaseapp.com","projectId":"mache-haitien-global-george","storageBucket":"mache-haitien-global-george.firebasestorage.app","messagingSenderId":"772493726106","appId":"1:772493726106:web:0631bc1ab4a7aee37eea23"};
+const app = initializeApp(CFG);
+const db = getFirestore(app);
+const auth = getAuth(app);
+const COL = "business_listings";
+const idMap = {};
+function toIso(v) { try { return v && v.toDate ? v.toDate().toISOString() : (v || null); } catch (e) { return null; } }
+function numId(docId, i) { return /^\d{1,15}$/.test(docId) ? Number(docId) : 900000000 + i; }
+function rowOf(d, i) { const x = d.data(); const id = numId(d.id, i); idMap[id] = d.id; return Object.assign({}, x, { id: id, created_at: toIso(x.createdAt) }); }
+async function listPublished() { const snap = await getDocs(query(collection(db, COL), where("status", "==", "published"))); return snap.docs.map(rowOf); }
+async function listAll() { const snap = await getDocs(collection(db, COL)); const rows = snap.docs.map(rowOf); rows.sort(function (a, b) { return b.id - a.id; }); return rows; }
+async function signInAdmin() {
+  const res = await signInWithPopup(auth, new GoogleAuthProvider());
+  const email = (res.user.email || "").toLowerCase();
+  const adm = await getDoc(doc(db, "admins", email));
+  if (!adm.exists()) { await signOut(auth); return null; }
+  return { name: adm.data().display_name || res.user.displayName || "", email: email };
+}
+function reply(ok, status, data) { return { ok: ok, status: status, json: async function () { return data; } }; }
+async function adminRequest(path, options) {
+  const method = (options && options.method) || "GET";
+  const m = String(path).match(/^businesses\?id=eq\.(\d+)/);
+  try {
+    if (method === "GET") { return reply(true, 200, await listAll()); }
+    if (m) {
+      const docId = idMap[Number(m[1])] || m[1];
+      if (method === "DELETE") { await deleteDoc(doc(db, COL, docId)); return reply(true, 204, []); }
+      if (method === "PATCH") { const body = JSON.parse(options.body || "{}"); delete body.id; delete body.created_at; body.updatedAt = serverTimestamp(); await updateDoc(doc(db, COL, docId), body); return reply(true, 200, []); }
+    }
+  } catch (e) { console.error(e); return reply(false, 403, []); }
+  return reply(false, 400, []);
+}
+async function addDraft(name) {
+  const id = String(Date.now());
+  await setDoc(doc(db, COL, id), { name: name, category: "", country: "", city: "", region: "", phone: "", website: "", description: "", status: "draft", createdAt: serverTimestamp() });
+  return Number(id);
+}
+window.mgFirebase = { listPublished: listPublished, signInAdmin: signInAdmin, signOut: function () { return signOut(auth); }, adminRequest: adminRequest, addDraft: addDraft };
+window.__mgResolve(window.mgFirebase);
+</script>
+<script>
+/* Admin panel: "+ Add business" creates a draft profile, then opens it for editing. */
+window.addBusinessDraft = async function () {
+  var name = prompt("Business name:");
+  if (!name || !name.trim()) return;
+  try {
+    await window.mgFirebaseReady;
+    var id = await window.mgFirebase.addDraft(name.trim());
+    await renderBusinessesAdminPanel();
+    openEditBusiness(id);
+  } catch (err) { toast("Could not add the business."); }
+};
 </script>
 </body>
 </html>
