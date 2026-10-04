@@ -694,7 +694,7 @@ footer .brand-logo{width:68px;height:68px;flex-basis:68px}
   <button class="ai-language-hint" id="aiLanguageHint" type="button" aria-label="Chat with Rachel, the 24/7 directory receptionist"><b>ASK RACHEL · 24/7</b>Kreyòl · English · Français · Español</button>
   <a class="whatsapp-launcher" href="https://wa.me/16468988279" target="_blank" rel="noopener" aria-label="Contact the team on WhatsApp"><svg viewBox="0 0 24 24" width="26" height="26" fill="white"><path d="M17.6 6.32A8.86 8.86 0 0 0 12.05 4C7.5 4 3.9 7.6 3.9 12.15c0 1.45.38 2.87 1.1 4.12L4 21l4.85-1c1.2.66 2.55 1 3.9 1a8.15 8.15 0 0 0 8.15-8.15c0-2.17-.86-4.2-2.3-5.53zm-5.55 12.8c-1.2 0-2.4-.32-3.44-.94l-.25-.15-2.56.67.68-2.5-.16-.26a6.65 6.65 0 0 1-1.03-3.6c0-3.7 3-6.7 6.7-6.7a6.65 6.65 0 0 1 6.7 6.7c0 3.7-3 6.78-6.64 6.78zm3.67-5.02c-.2-.1-1.2-.6-1.38-.66-.18-.07-.32-.1-.45.1-.13.2-.5.66-.62.8-.11.13-.23.15-.43.05-.2-.1-.85-.31-1.6-1-.6-.53-1-1.18-1.1-1.38-.12-.2 0-.3.1-.4.09-.1.2-.23.3-.35.1-.11.14-.2.2-.32.07-.13.03-.25-.02-.35-.05-.1-.45-1.1-.62-1.5-.16-.4-.33-.34-.45-.34h-.38c-.13 0-.34.05-.52.25s-.68.67-.68 1.63.7 1.9.8 2.03c.1.13 1.4 2.13 3.38 3 .47.2.84.32 1.13.4.47.15.9.13 1.24.08.38-.06 1.2-.5 1.36-.98.17-.48.17-.9.12-.98-.05-.08-.18-.13-.38-.23z"/></svg></a><button class="ai-chat-launcher" id="aiChatLauncher" type="button" aria-label="Chat with Rachel, the 24/7 directory receptionist" aria-expanded="false">✦</button>
   <section class="ai-chat" id="aiChat" aria-label="AI directory assistant" aria-hidden="true">
-    <header class="ai-chat-head"><div><h2 id="aiChatTitle">Rachel</h2><p id="aiChatSubtitle">Ask about listings, eligibility, countries, and WhatsApp.</p></div><div class="ai-chat-controls"><label><span class="sr-only">Language</span><select class="ai-language" id="aiLanguage"><option value="en">English</option><option value="ht">Kreyòl Ayisyen</option><option value="fr">Français</option><option value="es">Español</option></select></label><button class="ai-voice" id="aiVoice" type="button" aria-pressed="true" title="Turn Rachel's voice on or off">🔊 Voice on</button><button class="ai-chat-close" id="aiChatClose" type="button" aria-label="Close assistant">×</button></div></header>
+    <header class="ai-chat-head"><div><h2 id="aiChatTitle">Rachel</h2><p id="aiChatSubtitle">Ask about listings, eligibility, countries, and WhatsApp.</p></div><div class="ai-chat-controls"><label><span class="sr-only">Language</span><select class="ai-language" id="aiLanguage"><option value="en">English</option><option value="ht">Kreyòl Ayisyen</option><option value="fr">Français</option><option value="es">Español</option></select></label><button class="ai-voice" id="aiVoice" type="button" role="switch" aria-checked="true" title="Turn Rachel's read-aloud on or off">🔊 Read aloud: ON</button><button class="ai-chat-close" id="aiChatClose" type="button" aria-label="Close assistant">×</button></div></header>
     <div class="ai-chat-body" id="aiChatBody" role="log" aria-live="polite"></div>
     <form class="ai-chat-form" id="aiChatForm"><input id="aiQuestion" maxlength="500" autocomplete="off" placeholder="Ask a question…" aria-label="Question for the AI assistant"><button type="submit" id="aiSend">Send</button><p class="ai-status" id="aiStatus"><b>Rachel</b> · Kreyòl · English · Français · Español</p></form>
   </section>
@@ -923,26 +923,52 @@ async function saveEditBusiness(id){const payload={name:$('#editName').value.tri
 
 function toast(msg){$('#toast').textContent=msg;$('#toast').classList.add('show');setTimeout(()=>$('#toast').classList.remove('show'),3200)}function escapeHTML(v){return String(v).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}init();initAIChat();initAIHint();initReviewDialogClose();initCompliance();initReadAloud();
 </script>
-<style>.ai-voice{border:1px solid rgba(255,255,255,.55);background:rgba(255,255,255,.14);color:inherit;border-radius:999px;padding:6px 12px;font:inherit;font-size:.78rem;font-weight:700;cursor:pointer;white-space:nowrap}.ai-voice[aria-pressed="false"]{opacity:.7}.ai-voice:focus-visible{outline:3px solid #ffd700;outline-offset:2px}</style>
+<style>.ai-voice{border:1px solid rgba(255,255,255,.55);background:rgba(255,255,255,.14);color:inherit;border-radius:999px;padding:6px 12px;font:inherit;font-size:.78rem;font-weight:700;cursor:pointer;white-space:nowrap}.ai-voice[aria-checked="false"]{opacity:.75}.ai-voice:focus-visible{outline:3px solid #ffd700;outline-offset:2px}
+.rvm{border:0;border-radius:18px;padding:22px 24px;max-width:min(92vw,420px);box-shadow:0 20px 60px rgba(0,0,0,.35);text-align:center;color:#0f2a43}.rvm::backdrop{background:rgba(5,25,60,.55)}.rvm h2{margin:0 0 10px;font-size:1.15rem}.rvm p{margin:0 0 16px;line-height:1.5}.rvm button{border:0;border-radius:999px;padding:10px 26px;font:inherit;font-weight:700;cursor:pointer;background:#1b4fd8;color:#fff}.rvm button:focus-visible{outline:3px solid #ffd700;outline-offset:2px}</style>
+<dialog id="rachelVoiceModal" class="rvm" aria-labelledby="rvmTitle"><h2 id="rvmTitle">🔇 Not yet available for speaker</h2><p id="rvmText"></p><button type="button" id="rvmOk">OK</button></dialog>
 <script>
-/* Rachel speaks her answers aloud. The Voice button turns it on or off and remembers the choice. */
+/* Rachel reads her answers aloud. The Read aloud switch turns it on or off and remembers the choice.
+   Languages without a real browser voice (like Kreyol) show a "not yet available" message instead of a wrong accent. */
 (function () {
   var KEY = "rachelVoice", synth = window.speechSynthesis, btn = document.getElementById("aiVoice");
+  var modal = document.getElementById("rachelVoiceModal"), modalText = document.getElementById("rvmText"), okBtn = document.getElementById("rvmOk");
+  var NAMES = { en: "English", fr: "Fran\u00E7ais", es: "Espa\u00F1ol", ht: "Krey\u00F2l Ayisyen" };
+  var CODES = { en: "en-US", fr: "fr-FR", es: "es-ES", ht: "ht-HT" };
+  var shown = {};
   if (!synth) { if (btn) btn.hidden = true; return; }
   var on = true;
   try { on = localStorage.getItem(KEY) !== "off"; } catch (e) {}
-  function label() { if (!btn) return; btn.setAttribute("aria-pressed", on ? "true" : "false"); btn.textContent = on ? "\uD83D\uDD0A Voice on" : "\uD83D\uDD07 Voice off"; }
-  function langCode() { var s = document.getElementById("aiLanguage"); var v = s ? s.value : "en"; return ({ en: "en-US", fr: "fr-FR", es: "es-ES", ht: "fr-FR" })[v] || "en-US"; }
-  function pickVoice(code) { var vs = synth.getVoices(), base = code.split("-")[0]; for (var i = 0; i < vs.length; i++) { if (vs[i].lang === code) return vs[i]; } for (var j = 0; j < vs.length; j++) { if (vs[j].lang.indexOf(base) === 0) return vs[j]; } return null; }
+  function lang() { var s = document.getElementById("aiLanguage"); return s && CODES[s.value] ? s.value : "en"; }
+  function voiceFor(l) { var vs = synth.getVoices(), code = CODES[l], base = code.split("-")[0]; for (var i = 0; i < vs.length; i++) { if (vs[i].lang === code) return vs[i]; } for (var j = 0; j < vs.length; j++) { if (vs[j].lang.toLowerCase().indexOf(base) === 0) return vs[j]; } return null; }
+  function canSpeak(l) { if (voiceFor(l)) return true; if (l === "ht") return false; return synth.getVoices().length === 0; }
+  function label() { if (!btn) return; btn.setAttribute("role", "switch"); btn.setAttribute("aria-checked", on ? "true" : "false"); btn.textContent = on ? "\uD83D\uDD0A Read aloud: ON" : "\uD83D\uDD07 Read aloud: OFF"; }
+  function notice(l) {
+    if (!modal || shown[l]) return;
+    shown[l] = true;
+    modalText.textContent = "Rachel can't read aloud in " + NAMES[l] + " yet. You can still read her answers on the screen." + (l === "ht" ? " Vwa Rachel poko disponib an Krey\u00F2l. Ou ka li repons li yo sou ekran an." : "");
+    if (typeof modal.showModal === "function") { if (!modal.open) modal.showModal(); } else { alert(modalText.textContent); }
+  }
   window.rSpeak = function (text) {
     if (!on || !text) return;
-    var u = new SpeechSynthesisUtterance(String(text).replace(/\s+/g, " ").trim());
-    var code = langCode(); u.lang = code;
-    var v = pickVoice(code); if (v) u.voice = v;
+    var l = lang();
+    if (!canSpeak(l)) { notice(l); return; }
+    var clean = String(text).replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, " ").replace(/[\u00B7\u2022]/g, ", ").replace(/\s+/g, " ").trim();
+    if (!clean) return;
+    var u = new SpeechSynthesisUtterance(clean); u.lang = CODES[l];
+    var v = voiceFor(l); if (v) u.voice = v;
     u.rate = 0.95; synth.speak(u);
   };
   label();
-  if (btn) btn.addEventListener("click", function () { on = !on; try { localStorage.setItem(KEY, on ? "on" : "off"); } catch (e) {} if (!on) synth.cancel(); label(); });
+  if (btn) btn.addEventListener("click", function () {
+    on = !on;
+    try { localStorage.setItem(KEY, on ? "on" : "off"); } catch (e) {}
+    if (!on) synth.cancel();
+    label();
+    if (on) { var l = lang(); if (!canSpeak(l)) { shown[l] = false; notice(l); } }
+  });
+  if (okBtn) okBtn.addEventListener("click", function () { if (modal.open) modal.close(); });
+  var sel = document.getElementById("aiLanguage");
+  if (sel) sel.addEventListener("change", function () { synth.cancel(); if (on && !canSpeak(lang())) notice(lang()); });
   var close = document.getElementById("aiChatClose"); if (close) close.addEventListener("click", function () { synth.cancel(); });
   window.addEventListener("pagehide", function () { synth.cancel(); });
 })();
