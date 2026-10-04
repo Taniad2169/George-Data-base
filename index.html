@@ -973,5 +973,26 @@ function toast(msg){$('#toast').textContent=msg;$('#toast').classList.add('show'
   window.addEventListener("pagehide", function () { synth.cancel(); });
 })();
 </script>
+<style>
+/* Ask Rachel link: smooth page scrolling and a smooth slide-in when the chat box opens */
+html{scroll-behavior:smooth}
+@keyframes rachelSlideIn{from{opacity:0;transform:translateY(28px)}}
+.ai-chat.open{animation:rachelSlideIn .45s cubic-bezier(.22,1,.36,1) backwards}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.ai-chat.open{animation:none}}
+</style>
+<script>
+/* Opening the site with #rachel-chat (the "Ask Rachel" button on the Mache Haitien Global website) slides Rachel's chat box open */
+(function () {
+  function openRachelFromLink() {
+    if (location.hash !== "#rachel-chat") return;
+    var launcher = document.getElementById("aiChatLauncher"), panel = document.getElementById("aiChat");
+    if (!launcher || !panel) return;
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    if (!panel.classList.contains("open")) setTimeout(function () { launcher.click(); }, 500);
+  }
+  window.addEventListener("hashchange", openRachelFromLink);
+  window.addEventListener("load", function () { setTimeout(openRachelFromLink, 400); });
+})();
+</script>
 </body>
 </html>
