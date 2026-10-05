@@ -1016,5 +1016,115 @@ window.addBusinessDraft = async function () {
   } catch (err) { toast("Could not add the business."); }
 };
 </script>
+<script id="rachelOwnerModule">
+/* Rachel for business owners (second button) + a female read-aloud voice. Separate from the main script so it can never break the directory. */
+(function () {
+  try {
+    var st = document.createElement("style");
+    st.textContent = ".ai-owner-launcher{position:fixed;right:22px;bottom:166px;z-index:45;display:flex;align-items:center;gap:8px;border:2px solid var(--yellow,#f5c518);border-radius:999px;background:var(--green-dark,#0b3f16);color:#fff;padding:10px 16px;font:800 .8rem/1.2 inherit;box-shadow:0 12px 30px rgba(0,35,10,.28);cursor:pointer}.ai-owner-launcher:hover{transform:translateY(-2px)}@media(max-width:680px){.ai-owner-launcher{right:14px;bottom:150px;padding:9px 13px;font-size:.72rem}}";
+    document.head.appendChild(st);
+
+    /* ---------- Female voice ---------- */
+    var synth = window.speechSynthesis, origSpeak = window.rSpeak;
+    var CODES = { en: "en-US", fr: "fr-FR", es: "es-ES", ht: "ht-HT" };
+    var FEMALE = /zira|aria|jenny|michelle|emma|ava|samantha|karen|moira|tessa|victoria|susan|linda|hazel|libby|sonia|catherine|allison|joanna|salli|hortense|julie|denise|eloise|brigitte|amelie|audrey|helena|sabina|laura|paulina|monica|esperanza|elvira|lucia|female|woman|google us english|google fran|google espa/i;
+    var MALE = /david|mark|george|richard|james|guy|ryan|daniel|thomas|paul|alex|jorge|pablo|diego|\bmale\b|\bman\b/i;
+    function pickVoice(l) {
+      var vs = synth.getVoices(), code = CODES[l] || "en-US", base = code.split("-")[0], best = null, bs = -99;
+      for (var i = 0; i < vs.length; i++) {
+        var v = vs[i]; if (v.lang !== code && v.lang.toLowerCase().indexOf(base) !== 0) continue;
+        var s = 0; if (v.lang === code) s += 3; if (FEMALE.test(v.name)) s += 10; if (MALE.test(v.name) && !/female/i.test(v.name)) s -= 20; if (/natural|online/i.test(v.name)) s += 2;
+        if (s > bs) { bs = s; best = v; }
+      }
+      return best;
+    }
+    if (synth && typeof origSpeak === "function") {
+      window.rSpeak = function (text) {
+        var sel = document.getElementById("aiLanguage"), l = sel ? sel.value : "en", btn = document.getElementById("aiVoice");
+        if (btn && btn.getAttribute("aria-checked") === "false") return;
+        if (!text) return;
+        var v = l === "ht" ? null : pickVoice(l);
+        if (!v) return origSpeak(text);
+        var clean = String(text).replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, " ").replace(/[\u00B7\u2022]/g, ", ").replace(/\s+/g, " ").trim();
+        if (!clean) return;
+        var u = new SpeechSynthesisUtterance(clean); u.lang = CODES[l]; u.voice = v; u.rate = 0.95; u.pitch = 1.08; synth.speak(u);
+      };
+    }
+
+    /* ---------- Rachel for business owners ---------- */
+    var WA = "https://wa.me/16468988279?text=";
+    var OWN = {
+      en: { btn: "For business owners", btnAria: "Rachel for business owners: ask about joining the directory", mode: "Business owners", title: "Rachel \u00B7 Business owners", subtitle: "Questions about joining Mache Haitien Global.", placeholder: "Ask about joining\u2026",
+        welcome: "Hi! I'm Rachel. I can answer your questions about listing your business on Mache Haitien Global. Tap a question or type your own.",
+        qs: [["What type of business can join?", "type"], ["How do I apply?", "apply"], ["What information do I need?", "need"], ["How much does it cost?", "cost"], ["How long until my listing is live?", "time"], ["Can businesses outside the U.S. join?", "where"], ["Talk to the team", "team"]],
+        a: { type: "Every Haitian-owned business can join, no exception, as long as it qualifies to join the platform. That includes doctors, dentists, lawyers, restaurants, salons, contractors, stores, online businesses and more.", apply: "Fill out the short business form on this page (tap \"Open the form\" below). Our team reviews every application before the listing goes live. You can also message the team on WhatsApp.", need: "The form asks for your name, business name, phone, email, how long you have been in business, your country, state or region, city and address, whether you have a website, and a short description of your business.", cost: "I don't have pricing details to share here. Please message the team on WhatsApp and they will give you the current details.", time: "Every application is reviewed by the team before the listing is published. Message the team on WhatsApp if you would like an update on yours.", where: "Yes. Mache Haitien Global is for the Haitian community worldwide. Haitian-owned businesses in any country can apply, and online businesses are welcome.", team: "Tap the WhatsApp button and a team member will help you.", unknown: "I'm not sure about that one. Tap the WhatsApp button and a team member will answer you." },
+        open: "Open the form", wa: "Message the team on WhatsApp", more: "More questions", waText: "Hello, I am a Haitian business owner and I have a question about joining Mache Haitien Global." },
+      fr: { btn: "Pour les entrepreneurs", btnAria: "Rachel pour les entrepreneurs : questions sur l'inscription", mode: "Entrepreneurs", title: "Rachel \u00B7 Entrepreneurs", subtitle: "Questions sur l'inscription \u00E0 Mache Haitien Global.", placeholder: "Posez une question sur l'inscription\u2026",
+        welcome: "Bonjour ! Je suis Rachel. Je r\u00E9ponds \u00E0 vos questions sur l'inscription de votre entreprise sur Mache Haitien Global. Touchez une question ou \u00E9crivez la v\u00F4tre.",
+        qs: [["Quels types d'entreprises peuvent s'inscrire ?", "type"], ["Comment postuler ?", "apply"], ["De quelles informations ai-je besoin ?", "need"], ["Combien \u00E7a co\u00FBte ?", "cost"], ["Combien de temps avant que ma fiche soit en ligne ?", "time"], ["Les entreprises hors des \u00C9tats-Unis peuvent-elles s'inscrire ?", "where"], ["Parler \u00E0 l'\u00E9quipe", "team"]],
+        a: { type: "Toute entreprise ha\u00EFtienne peut s'inscrire, sans exception, \u00E0 condition de remplir les conditions pour rejoindre la plateforme. Cela inclut les m\u00E9decins, dentistes, avocats, restaurants, salons, entrepreneurs, boutiques, entreprises en ligne et plus encore.", apply: "Remplissez le court formulaire sur cette page (touchez \u00AB Ouvrir le formulaire \u00BB ci-dessous). Notre \u00E9quipe examine chaque demande avant la mise en ligne de la fiche. Vous pouvez aussi \u00E9crire \u00E0 l'\u00E9quipe sur WhatsApp.", need: "Le formulaire demande votre nom, le nom de l'entreprise, le t\u00E9l\u00E9phone, l'e-mail, depuis combien de temps vous \u00EAtes en activit\u00E9, le pays, l'\u00C9tat ou la r\u00E9gion, la ville et l'adresse, si vous avez un site web, et une courte description de votre entreprise.", cost: "Je n'ai pas de d\u00E9tails de prix \u00E0 vous donner ici. \u00C9crivez \u00E0 l'\u00E9quipe sur WhatsApp pour conna\u00EEtre les informations actuelles.", time: "Chaque demande est examin\u00E9e par l'\u00E9quipe avant la publication de la fiche. \u00C9crivez \u00E0 l'\u00E9quipe sur WhatsApp si vous voulez des nouvelles de la v\u00F4tre.", where: "Oui. Mache Haitien Global s'adresse \u00E0 la communaut\u00E9 ha\u00EFtienne du monde entier. Les entreprises ha\u00EFtiennes de tous les pays peuvent postuler, et les entreprises en ligne sont les bienvenues.", team: "Touchez le bouton WhatsApp et un membre de l'\u00E9quipe vous aidera.", unknown: "Je ne suis pas s\u00FBre de la r\u00E9ponse. Touchez le bouton WhatsApp et un membre de l'\u00E9quipe vous r\u00E9pondra." },
+        open: "Ouvrir le formulaire", wa: "\u00C9crire \u00E0 l'\u00E9quipe sur WhatsApp", more: "Plus de questions", waText: "Bonjour, je suis propri\u00E9taire d'une entreprise ha\u00EFtienne et j'ai une question sur l'inscription \u00E0 Mache Haitien Global." },
+      es: { btn: "Para due\u00F1os de negocios", btnAria: "Rachel para due\u00F1os de negocios: preguntas sobre c\u00F3mo unirse", mode: "Due\u00F1os de negocios", title: "Rachel \u00B7 Due\u00F1os de negocios", subtitle: "Preguntas sobre c\u00F3mo unirse a Mache Haitien Global.", placeholder: "Pregunta sobre c\u00F3mo unirte\u2026",
+        welcome: "\u00A1Hola! Soy Rachel. Respondo tus preguntas sobre c\u00F3mo anunciar tu negocio en Mache Haitien Global. Toca una pregunta o escribe la tuya.",
+        qs: [["\u00BFQu\u00E9 tipo de negocios pueden unirse?", "type"], ["\u00BFC\u00F3mo me inscribo?", "apply"], ["\u00BFQu\u00E9 informaci\u00F3n necesito?", "need"], ["\u00BFCu\u00E1nto cuesta?", "cost"], ["\u00BFCu\u00E1nto tarda en publicarse mi anuncio?", "time"], ["\u00BFPueden unirse negocios fuera de EE. UU.?", "where"], ["Hablar con el equipo", "team"]],
+        a: { type: "Todo negocio de propiedad haitiana puede unirse, sin excepci\u00F3n, siempre que califique para unirse a la plataforma. Incluye m\u00E9dicos, dentistas, abogados, restaurantes, salones, contratistas, tiendas, negocios en l\u00EDnea y m\u00E1s.", apply: "Completa el breve formulario de esta p\u00E1gina (toca \u00ABAbrir el formulario\u00BB abajo). Nuestro equipo revisa cada solicitud antes de publicar el anuncio. Tambi\u00E9n puedes escribir al equipo por WhatsApp.", need: "El formulario pide tu nombre, el nombre del negocio, tel\u00E9fono, correo, cu\u00E1nto tiempo llevas en el negocio, pa\u00EDs, estado o regi\u00F3n, ciudad y direcci\u00F3n, si tienes sitio web y una breve descripci\u00F3n de tu negocio.", cost: "No tengo detalles de precios para compartir aqu\u00ED. Escribe al equipo por WhatsApp y te dar\u00E1n la informaci\u00F3n actual.", time: "El equipo revisa cada solicitud antes de publicar el anuncio. Escribe al equipo por WhatsApp si quieres saber c\u00F3mo va la tuya.", where: "S\u00ED. Mache Haitien Global es para la comunidad haitiana de todo el mundo. Los negocios de propiedad haitiana de cualquier pa\u00EDs pueden postularse, y los negocios en l\u00EDnea son bienvenidos.", team: "Toca el bot\u00F3n de WhatsApp y un miembro del equipo te ayudar\u00E1.", unknown: "No estoy segura de esa respuesta. Toca el bot\u00F3n de WhatsApp y un miembro del equipo te responder\u00E1." },
+        open: "Abrir el formulario", wa: "Escribir al equipo por WhatsApp", more: "M\u00E1s preguntas", waText: "Hola, soy due\u00F1o de un negocio haitiano y tengo una pregunta sobre c\u00F3mo unirme a Mache Haitien Global." },
+      ht: { btn: "Pou pw\u00F2priyet\u00E8 biznis", btnAria: "Rachel pou pw\u00F2priyet\u00E8 biznis: kesyon sou kijan pou antre", mode: "Pw\u00F2priyet\u00E8 biznis", title: "Rachel \u00B7 Pw\u00F2priyet\u00E8 biznis", subtitle: "Kesyon sou kijan pou antre nan Mache Haitien Global.", placeholder: "Poze yon kesyon sou kijan pou antre\u2026",
+        welcome: "Bonjou! Mwen se Rachel. Mwen ka reponn kesyon w yo sou kijan pou mete biznis ou sou Mache Haitien Global. Peze sou yon kesyon oswa ekri pa w.",
+        qs: [["Ki kalite biznis ki ka antre?", "type"], ["Kijan pou m aplike?", "apply"], ["Ki enf\u00F2masyon mwen bezwen?", "need"], ["Konbyen sa koute?", "cost"], ["Konbyen tan anvan lis biznis mwen an par\u00E8?", "time"], ["Biznis ande\u00F2 Etazini ka antre?", "where"], ["Pale ak ekip la", "team"]],
+        a: { type: "Tout biznis ayisyen ka antre, san okenn eksepsyon, depi yo kalifye pou antre sou platf\u00F2m lan. Sa gen ladan dokt\u00E8, dantis, avoka, restoran, salon, kontrakt\u00E8, magazen, biznis sou ent\u00E8n\u00E8t ak l\u00F2t ank\u00F2.", apply: "Ranpli ti f\u00F2m biznis la sou paj sa a (peze sou \u00AB Louvri f\u00F2m lan \u00BB anba a). Ekip nou an gade chak demann anvan lis la par\u00E8. Ou ka tou voye yon mesaj ekip la sou WhatsApp.", need: "F\u00F2m lan mande non ou, non biznis la, telef\u00F2n, imel, konbyen tan ou nan biznis la, peyi, eta oswa rejyon, vil ak adr\u00E8s, si ou gen yon sit w\u00E8b, ak yon ti deskripsyon biznis ou.", cost: "Mwen pa gen detay sou pri pou m pataje isit la. Voye yon mesaj ekip la sou WhatsApp, y ap ba ou enf\u00F2masyon akt\u00E8l yo.", time: "Ekip la gade chak demann anvan lis la pibliye. Voye yon mesaj ekip la sou WhatsApp si ou vle nouv\u00E8l demann ou an.", where: "Wi. Mache Haitien Global se pou kominote ayisyen an atrav\u00E8 lemonn. Biznis ayisyen nan nenp\u00F2t peyi ka aplike, e biznis sou ent\u00E8n\u00E8t yo byenveni.", team: "Peze bouton WhatsApp la epi yon manm ekip la ap ede w.", unknown: "Mwen pa s\u00E8ten sou repons lan. Peze bouton WhatsApp la epi yon manm ekip la ap reponn ou." },
+        open: "Louvri f\u00F2m lan", wa: "Voye yon mesaj ekip la sou WhatsApp", more: "Plis kesyon", waText: "Bonjou, mwen se pw\u00F2priyet\u00E8 yon biznis ayisyen epi mwen gen yon kesyon sou kijan pou antre nan Mache Haitien Global." }
+    };
+    var RULES = [
+      ["type", /what (type|kind)|which (type|kind)|types? of business|kinds? of business|who can (join|list|apply)|eligib|qualif|exception|can (i|my business|a [a-z]+) join|industry|quel(s)? (type|genre)|quelles? entreprises|qui peut|que tipo|quien puede|ki kalite|ki biznis|ki moun ka|kalifye|kalifie/],
+      ["apply", /how.*(apply|join|list|sign|register|enroll)|\bapply\b|sign.?up|register|comment.*(postuler|inscrire|rejoindre)|como.*(inscrib|unir|aplic)|kijan.*(aplike|antre|enskri|mete)|aplike/],
+      ["need", /what.*(need|require|information|documents)|requirements?|documents?|information|besoin|exig|necesit|requisit|bezwen|dokiman|enfomasyon/],
+      ["cost", /\bcost\b|price|\bfees?\b|\bpay\b|\bfree\b|how much|tarif|prix|cout|combien|costo|precio|cuanto cuesta|koute|\bpri\b|gratis|gratuit/],
+      ["time", /how long|\bwhen\b|go live|is live|approve|review|\bwait\b|published?|combien de temps|quand|cuanto tarda|cuando|konbyen tan|kile|apwouve/],
+      ["where", /outside|abroad|other countr|another countr|online|worldwide|international|hors des|etranger|fuera|extranjero|andeyo|lot peyi|entenet/],
+      ["team", /whatsapp|person|human|\bteam\b|contact|\bcall\b|\btalk\b|speak|agent|equipe|parler|equipo|hablar|ekip|\bpale\b|\brele\b/]
+    ];
+    function norm(s) { return String(s || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""); }
+    function T() { var s = document.getElementById("aiLanguage"); return OWN[s ? s.value : "en"] || OWN.en; }
+    function init() {
+      var chat = document.getElementById("aiChat"), launcher = document.getElementById("aiChatLauncher"), form = document.getElementById("aiChatForm"), sel = document.getElementById("aiLanguage");
+      if (!chat || !launcher || !form || !sel || typeof aiAddMessage !== "function" || typeof rButtons !== "function") return;
+      var origClick = launcher.onclick, origChange = sel.onchange;
+      var ob = document.createElement("button"); ob.type = "button"; ob.id = "aiOwnerLauncher"; ob.className = "ai-owner-launcher";
+      ob.innerHTML = '<span aria-hidden="true">\uD83C\uDFEA</span><span id="aiOwnerLabel"></span>'; document.body.appendChild(ob);
+      function label() { var t = T(); document.getElementById("aiOwnerLabel").textContent = t.btn; ob.setAttribute("aria-label", t.btnAria); }
+      label();
+      function chips() { var t = T(); rButtons(t.qs.map(function (x) { return [x[0], x[1]]; }), function (key, lbl) { aiAddMessage(lbl, "user"); answer(key); }); }
+      function openForm() { var el = document.querySelector(".vendor-cta") || document.getElementById("vendorForm"); if (window.innerWidth < 700 && chat.classList.contains("open")) { window.__rOwner = false; origClick.call(launcher); } if (el) el.scrollIntoView({ behavior: "smooth", block: "start" }); }
+      function answer(key) {
+        var t = T(); aiAddMessage(t.a[key] || t.a.unknown);
+        var items = []; if (key === "apply" || key === "type" || key === "need") items.push([t.open, "open"]); items.push([t.wa, "wa"]); items.push([t.more, "more"]);
+        rButtons(items, function (v) { if (v === "open") openForm(); else if (v === "wa") window.open(WA + encodeURIComponent(t.waText), "_blank", "noopener"); if (v !== "more") chips(); else chips(); });
+      }
+      function ownerAsk(q) { aiAddMessage(q, "user"); var n = norm(q), key = "unknown"; for (var i = 0; i < RULES.length; i++) { if (RULES[i][1].test(n)) { key = RULES[i][0]; break; } } answer(key); }
+      function ownerStart() {
+        var t = T(); document.getElementById("aiChatBody").innerHTML = "";
+        document.getElementById("aiChatTitle").textContent = t.title; document.getElementById("aiChatSubtitle").textContent = t.subtitle;
+        var q = document.getElementById("aiQuestion"); if (q) q.placeholder = t.placeholder;
+        var s = document.getElementById("aiStatus"); if (s) s.innerHTML = "<b>Rachel \u00B7 " + t.mode + "</b>";
+        aiAddMessage(t.welcome); chips();
+      }
+      ob.onclick = function () { window.__rOwner = true; if (!chat.classList.contains("open")) origClick.call(launcher); ownerStart(); };
+      launcher.onclick = function (e) {
+        var open = chat.classList.contains("open");
+        if (window.__rOwner) {
+          window.__rOwner = false;
+          if (e && e.isTrusted) { if (!open) origClick.call(launcher, e); aiSetLanguage(true); return; }
+          return origClick.call(launcher, e);
+        }
+        return origClick.call(launcher, e);
+      };
+      form.addEventListener("submit", function (e) { if (!window.__rOwner) return; e.preventDefault(); e.stopImmediatePropagation(); var qi = document.getElementById("aiQuestion"), q = qi ? qi.value.trim() : ""; if (!q) return; qi.value = ""; ownerAsk(q); }, true);
+      sel.onchange = function (e) { label(); if (window.__rOwner) ownerStart(); else if (origChange) origChange.call(sel, e); };
+    }
+    if (document.readyState === "complete") init(); else window.addEventListener("load", init);
+  } catch (err) { if (window.console) console.error("Rachel owner module failed", err); }
+})();
+</script>
 </body>
 </html>
