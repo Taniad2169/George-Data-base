@@ -1096,11 +1096,13 @@ window.addBusinessDraft = async function () {
       launcher.onclick = function (e) {
         var open = chat.classList.contains("open");
         if (window.__rOwner) {
-          window.__rOwner = false;
-          if (e && e.isTrusted) { if (!open) origClick.call(launcher, e); aiSetLanguage(true); return; }
-          return origClick.call(launcher, e);
+          window.__rOwner = false; window.__rDirty = true;
+          if (e && e.isTrusted) { if (!open) origClick.call(launcher, e); window.__rDirty = false; aiSetLanguage(true); return; }
+          return origClick.call(launcher, e);   /* closing the owner chat */
         }
-        return origClick.call(launcher, e);
+        var res = origClick.call(launcher, e);
+        if (window.__rDirty && chat.classList.contains("open")) { window.__rDirty = false; aiSetLanguage(true); }   /* owner content is still showing: reset to the visitor chat */
+        return res;
       };
       /* Typed questions: owner mode answers from the owner list; visitor mode never gives prices (WhatsApp instead). */
       form.addEventListener("submit", function (e) {
