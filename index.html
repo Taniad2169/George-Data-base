@@ -612,11 +612,11 @@ footer .brand-logo{width:68px;height:68px;flex-basis:68px}
           _subject: 'Mache Haitien Global No Website'
         };
       }
-      await fetch(WEBSITE_LEAD_FORMSPREE_URL, {
+      fetch(WEBSITE_LEAD_FORMSPREE_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
         body: JSON.stringify(leadPayload)
-      });
+      }).catch(function () {});
     } catch (err) { /* don't block WhatsApp if this fails */ }
 
     let message = 'New Business Listing Application - Mache Haitien Global\n\n';
@@ -680,7 +680,19 @@ footer .brand-logo{width:68px;height:68px;flex-basis:68px}
       whatsapp: waUrl,
       onPaid: async payment => {
         await window.mhgDirectoryReady;
-        await window.mhgDirectory.save(data, payment);
+        const newId = await window.mhgDirectory.save(data, payment);
+        // show the new business in this page's search and Rachel right away
+        try {
+          if (typeof businesses !== 'undefined') {
+            businesses.push({ id: 600000 + businesses.length, slug: data.businessName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') + '-' + String(newId).slice(0, 6).toLowerCase(),
+              name: data.businessName, category: (data.industry === 'Other' && data.industryOther) ? data.industryOther : data.industry, secondary: [],
+              city: data.city, region: data.region || data.usState || '', country: data.country, description: data.description || '', services: [], languages: [],
+              phone: data.phone, whatsapp: (data.phone || '').replace(/[^0-9]/g, ''), website: data.website || '', googleReviewUrl: data.googleReviewUrl || '',
+              dirId: newId, photoCount: (window.MHGPhotos ? window.MHGPhotos.get().length : 0), hours: '', established: new Date().getFullYear(),
+              mode: 'In person', featured: false, joined: new Date().toISOString().slice(0, 10), reviews: [] });
+            if (typeof render === 'function') render();
+          }
+        } catch (e) { console.warn(e); }
         msgEl.textContent = 'Payment approved. Your business is now in the directory.';
         msgEl.className = 'vendor-form-msg success';
         done();
