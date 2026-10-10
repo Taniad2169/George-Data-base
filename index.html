@@ -431,6 +431,9 @@ footer .brand-logo{width:68px;height:68px;flex-basis:68px}
               <option>Chile</option>
               <option>Dominican Republic</option>
               <option>Puerto Rico</option>
+              <option>Martinique</option>
+              <option>Guadeloupe</option>
+              <option>Saint Martin</option>
             </select>
           </div>
         </div>
@@ -494,7 +497,7 @@ footer .brand-logo{width:68px;height:68px;flex-basis:68px}
           <option>Haitian Restaurant</option>
           <option>Haitian Food Truck</option>
           <option>Catering</option>
-          <option>Massage Therapist</option> <option>Entrepreneur</option> <option>Store / Retail</option> <option>Airbnb / Short-Term Rental</option> <option>Other</option>
+          <option>Massage Therapist</option> <option>Entrepreneur</option> <option>Store / Retail</option> <option>Airbnb / Short-Term Rental</option> <option>Driver</option> <option>Limousine</option> <option>Taxi</option> <option>Other</option>
         </select>
 
         <div id="otherCategoryWrap" style="display:none;">
@@ -504,6 +507,17 @@ footer .brand-logo{width:68px;height:68px;flex-basis:68px}
 
         <label>Tell us about your business</label>
         <textarea id="v-description" placeholder="What do you offer? What makes your business worth featuring?"></textarea>
+
+        <label for="extraNotes">Anything else you want us to know? <span class="optional-tag">(250 words max)</span></label>
+        <textarea id="extraNotes" maxlength="1800" oninput="mhgWordCap(this, 250)"></textarea>
+        <small class="word-count" id="extraCount">0 / 250</small>
+
+        <label for="googleReview">Your Google review link <span class="optional-tag">(optional)</span></label>
+        <input type="url" id="googleReview" maxlength="300" placeholder="https://g.page/r/...">
+
+        <label for="bizPhotos">Photos of you at work or of your products <span class="optional-tag">(up to 2, optional)</span></label>
+        <input type="file" id="bizPhotos" accept="image/*" multiple>
+        <div id="photoPreview" class="photo-preview" aria-live="polite"></div>
         <button type="submit">Submit and continue to payment</button>
         <div class="vendor-form-msg" id="vendorFormMsg"></div>
       </form>
@@ -561,6 +575,9 @@ footer .brand-logo{width:68px;height:68px;flex-basis:68px}
     const category = categorySelect.value;
     const categoryOther = document.getElementById('v-categoryOther').value.trim();
     const description = document.getElementById('v-description').value.trim();
+    const extraNotes = document.getElementById('extraNotes').value.trim();
+    let googleReview = document.getElementById('googleReview').value.trim();
+    if (googleReview && !/^https?:\/\//i.test(googleReview)) googleReview = 'https://' + googleReview;
 
     if (!name || !business || !phone || !email || !years || !country || !state || !location || !hasWebsite || !category) {
       msgEl.textContent = 'Please fill in all required fields.';
@@ -616,6 +633,8 @@ footer .brand-logo{width:68px;height:68px;flex-basis:68px}
     message += 'Has Website: ' + (hasWebsite === 'yes' ? 'Yes - ' + website : 'No') + '\n';
     if (compliance) message += 'Website Compliance: ' + compliance + '\n';
     if (description) message += 'About: ' + description + '\n';
+    if (extraNotes) message += 'Anything else: ' + extraNotes + '\n';
+    if (googleReview) message += 'Google reviews: ' + googleReview + '\n';
 
     const waUrl = 'https://wa.me/' + WHATSAPP_NUMBER + '?text=' + encodeURIComponent(message);
 
@@ -638,11 +657,15 @@ footer .brand-logo{width:68px;height:68px;flex-basis:68px}
       phone: cleanPhone,
       email: email.slice(0, 120),
       website: website.slice(0, 200),
+      extraNotes: extraNotes.slice(0, 1800),
+      googleReviewUrl: googleReview.slice(0, 300),
       source: 'george-data-base-web'
     };
 
     function done() {
       form.reset();
+      if (window.MHGPhotos) window.MHGPhotos.clear();
+      document.getElementById('extraCount').textContent = '0 / 250';
       websiteFieldWrap.style.display = 'none';
       complianceFieldWrap.style.display = 'none';
       otherCategoryWrap.style.display = 'none';
@@ -742,7 +765,7 @@ footer .brand-logo{width:68px;height:68px;flex-basis:68px}
   <div class="toast" id="toast" role="status"></div>
   <script>let businesses=[];
 const knownCategories=['Restaurant','Dentist','Lawyer','Stores & Retail','Real Estate','Beauty & Hair','Financial Services','Professional Services','Short-Term Rental','Web Designer','Web Developer','Digital Marketing Agency','Social Media Marketing','Marketing/Advertising','Software Developer','Machann Feuille','Natural Remedy','Doctor','Accountant','Insurance Agent','Mortgage Broker/Agent','Plumber','Electrician','Handyman','HVAC','Entrepreneur','Massage Therapist','E-commerce / Online Store','Haitian Restaurant','Haitian Food Truck','Catering','Realtor'];
-const categories=[...new Set([...knownCategories, ...businesses.flatMap(b=>[b.category,...b.secondary])])].sort(),countries=['United States','Canada','France','Haiti','Brazil','Chile','Dominican Republic','Puerto Rico'];
+const categories=[...new Set([...knownCategories, ...businesses.flatMap(b=>[b.category,...b.secondary])])].sort(),countries=['United States','Canada','France','Haiti','Brazil','Chile','Dominican Republic','Puerto Rico','Martinique','Guadeloupe','Saint Martin'];
 let state={query:'',category:'',country:'',location:'',sort:'featured',page:1};
 
 // Directory data lives in Firebase (Firestore). Published businesses load into the
@@ -795,6 +818,9 @@ async function loadApprovedBusinesses(){
       phone:r.phone||'',
       whatsapp:(r.phone||'').replace(/[^0-9]/g,''),
       website:r.website||'',
+      googleReviewUrl:r.googleReviewUrl||'',
+      dirId:r.id,
+      photoCount:r.photoCount||0,
       hours:'',
       established:new Date().getFullYear()-(parseInt(r.yearsInBusiness,10)||0),
       mode:'In person',
@@ -1214,7 +1240,7 @@ window.MHG_PAYMENT = {
    Vendor sign-ups from this site and from the Mache Haitien Global form are saved here
    after payment, so Rachel and the manual search find them on both sites. */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, doc, setDoc, writeBatch, getDocs, query, orderBy, limit, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, doc, getDoc, setDoc, writeBatch, getDocs, query, orderBy, limit, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const dirApp = initializeApp({
   apiKey: "AIzaSyBmVnWxX3rMOxh1LebUw2Up9nxm5C7HG8g",
   authDomain: "mache-haitien-global.firebaseapp.com",
@@ -1227,20 +1253,24 @@ const ddb = getFirestore(dirApp);
 function listingFrom(d, payment) {
   return { businessName: d.businessName, industry: d.industry, industryOther: d.industryOther || '', city: d.city, country: d.country,
     usState: d.usState || '', region: d.region || '', yearsInBusiness: d.yearsInBusiness, phone: d.phone, website: d.website || '',
-    description: d.description || '', language: d.language || 'en', source: d.source || 'george-data-base-web', status: 'published', payment: payment };
+    description: d.description || '', language: d.language || 'en', source: d.source || 'george-data-base-web',
+    googleReviewUrl: d.googleReviewUrl || '', photoCount: d.photoCount || 0, status: 'published', payment: payment };
 }
 async function save(data, payment, pendingOnly) {
+  const photos = (window.MHGPhotos && window.MHGPhotos.get()) || [];
+  data = Object.assign({}, data, { photoCount: photos.length });
   const subRef = doc(collection(ddb, 'business_submissions'));
   const sub = Object.assign({}, data, { payment: payment, createdAt: serverTimestamp() });
   Object.keys(sub).forEach(function (k) { if (sub[k] === '') delete sub[k]; });
   if (pendingOnly) {
     await setDoc(subRef, sub);
-    try { localStorage.setItem('mhgPendingListing', JSON.stringify({ id: subRef.id, data: data })); } catch (e) {}
+    try { localStorage.setItem('mhgPendingListing', JSON.stringify({ id: subRef.id, data: data, photos: photos })); } catch (e) {}
     return subRef.id;
   }
   const batch = writeBatch(ddb);
   batch.set(subRef, sub);
   batch.set(doc(ddb, 'business_listings', subRef.id), Object.assign(listingFrom(data, payment), { createdAt: serverTimestamp() }));
+  if (photos.length) batch.set(doc(ddb, 'listing_photos', subRef.id), { photos: photos, createdAt: serverTimestamp() });
   await batch.commit();
   return subRef.id;
 }
@@ -1248,7 +1278,10 @@ async function listPaid() {
   const snap = await getDocs(query(collection(ddb, 'business_listings'), orderBy('createdAt', 'desc'), limit(500)));
   return snap.docs.map(function (d) { const x = d.data(); let c = null; try { c = x.createdAt && x.createdAt.toDate ? x.createdAt.toDate().toISOString() : null; } catch (e) {} return Object.assign({ id: d.id, created_at: c }, x); });
 }
-window.mhgDirectory = { save: save, listPaid: listPaid };
+async function getPhotos(id) {
+  try { const d = await getDoc(doc(ddb, 'listing_photos', id)); return d.exists() ? (d.data().photos || []) : []; } catch (e) { return []; }
+}
+window.mhgDirectory = { save: save, listPaid: listPaid, getPhotos: getPhotos };
 window.__mhgDirResolve(window.mhgDirectory);
 /* Back from Stripe (?mhg_paid=SESSION_ID): publish the listing that was waiting for payment. */
 (function () {
@@ -1259,7 +1292,10 @@ window.__mhgDirResolve(window.mhgDirectory);
   if (!pending) return;
   const payment = { status: 'paid', method: 'stripe', ref: String(session).slice(0, 200) };
   window.MHGPay.open({ lang: 'en', onPaid: async function () {
-    await setDoc(doc(ddb, 'business_listings', pending.id), Object.assign(listingFrom(pending.data, payment), { createdAt: serverTimestamp() }));
+    const b = writeBatch(ddb);
+    b.set(doc(ddb, 'business_listings', pending.id), Object.assign(listingFrom(pending.data, payment), { createdAt: serverTimestamp() }));
+    if (pending.photos && pending.photos.length) b.set(doc(ddb, 'listing_photos', pending.id), { photos: pending.photos.slice(0, 2), createdAt: serverTimestamp() });
+    await b.commit();
     try { localStorage.removeItem('mhgPendingListing'); } catch (e) {}
   } });
   window.MHGPay.finish(payment);
@@ -1423,5 +1459,163 @@ window.addBusinessDraft = async function () {
   } catch (err) { if (window.console) console.error("Rachel owner module failed", err); }
 })();
 </script>
+<!-- ===================== MHG PHOTOS + WORD LIMIT HELPERS ===================== -->
+<style>
+.photo-preview{display:flex;gap:10px;margin-top:8px;flex-wrap:wrap}
+.photo-preview figure{margin:0;position:relative;width:96px;height:96px;border-radius:10px;overflow:hidden;border:1px solid #c7d3e2;background:#f2f6fb}
+.photo-preview img{width:100%;height:100%;object-fit:cover;display:block}
+.photo-preview button{position:absolute;top:4px;right:4px;width:28px;height:28px;border-radius:50%;border:0;background:rgba(0,0,0,.65);color:#fff;font-weight:800;font-size:16px;line-height:1;cursor:pointer}
+.word-count{display:block;text-align:right;font-size:12px;color:#5f6f84;margin-top:4px}
+</style>
+<script>
+/* Keeps a text box under a word limit and updates its counter. */
+window.mhgWordCap = function (el, max) {
+  var w = el.value.trim().split(/\s+/).filter(Boolean);
+  if (w.length > max) el.value = w.slice(0, max).join(' ');
+  var c = document.getElementById(el.getAttribute('data-count') || (el.id === 'extraNotes' ? 'extraCount' : ''));
+  if (c) c.textContent = Math.min(w.length, max) + ' / ' + max;
+};
+/* Up to 2 photos, shrunk on the phone to small JPEGs (about 300 KB or less each) before saving. */
+window.MHGPhotos = (function () {
+  var list = [], previews = [];
+  function compress(file) {
+    return new Promise(function (res, rej) {
+      var img = new Image(), url = URL.createObjectURL(file);
+      img.onload = function () {
+        var max = 900, sc = Math.min(1, max / Math.max(img.width, img.height));
+        var c = document.createElement('canvas'); c.width = Math.round(img.width * sc); c.height = Math.round(img.height * sc);
+        var g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height); g.drawImage(img, 0, 0, c.width, c.height);
+        URL.revokeObjectURL(url);
+        var q = 0.8, d = c.toDataURL('image/jpeg', q);
+        while (d.length > 300000 && q > 0.35) { q -= 0.1; d = c.toDataURL('image/jpeg', q); }
+        res(d);
+      };
+      img.onerror = function () { URL.revokeObjectURL(url); rej(new Error('Could not read this picture')); };
+      img.src = url;
+    });
+  }
+  function drawAll() {
+    previews.forEach(function (pv) {
+      pv.innerHTML = '';
+      list.forEach(function (d, i) {
+        var f = document.createElement('figure');
+        f.innerHTML = '<img alt="Photo ' + (i + 1) + '"><button type="button" aria-label="Remove photo ' + (i + 1) + '">×</button>';
+        f.querySelector('img').src = d;
+        f.querySelector('button').onclick = function () { list.splice(i, 1); drawAll(); };
+        pv.appendChild(f);
+      });
+    });
+  }
+  function bind(inputId, previewId) {
+    var inp = document.getElementById(inputId), pv = document.getElementById(previewId);
+    if (!inp || !pv) return;
+    previews.push(pv);
+    inp.addEventListener('change', async function () {
+      var files = [].slice.call(inp.files || []);
+      for (var i = 0; i < files.length && list.length < 2; i++) { try { list.push(await compress(files[i])); } catch (e) { console.warn(e); } }
+      inp.value = ''; drawAll();
+    });
+  }
+  return { bind: bind, get: function () { return list.slice(0, 2); }, clear: function () { list = []; drawAll(); } };
+})();
+</script>
+<!-- =================== END MHG PHOTOS =================== -->
+
+<!-- ===================== LANGUAGE BAR (Google Translate: every language, one tap for Kreyòl / Français / Español) ===================== -->
+<style>
+.mhg-langbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px;padding:6px 16px;background:#0b3d2e;color:#fff;font:600 13px/1.2 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+.mhg-langbar span{opacity:.85;margin-right:2px}
+.mhg-langbar button{font:700 13px/1 inherit;font-family:inherit;color:#0b3d2e;background:#ffd447;border:0;border-radius:999px;padding:7px 12px;cursor:pointer}
+.mhg-langbar button[aria-pressed="true"]{background:#fff}
+.mhg-langbar button:focus-visible{outline:2px solid #fff;outline-offset:2px}
+#google_translate_element{display:inline-block}
+#google_translate_element .goog-te-gadget-simple{border-radius:999px;padding:4px 8px;border:0}
+.goog-te-banner-frame,iframe.skiptranslate{display:none!important}
+body{top:0!important}
+/* Google review banner + photos on every merchant profile */
+.gr-banner{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:#fff;border:1px solid #e3e6ea;border-radius:14px;padding:12px 14px;margin:0 0 18px;box-shadow:0 2px 10px rgba(0,0,0,.05)}
+.gr-g{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font:800 20px/1 Arial,sans-serif;color:#fff;background:conic-gradient(#ea4335 0 25%,#fbbc05 0 50%,#34a853 0 75%,#4285f4 0)}
+.gr-text{flex:1;min-width:150px}
+.gr-text b{display:block;font-size:.95rem;color:#1f2933}
+.gr-stars{color:#f4b400;letter-spacing:2px;font-size:1rem}
+.gr-text small{display:block;color:#5f6b76;font-size:.8rem}
+.gr-banner a{background:#4285f4;color:#fff!important;text-decoration:none;font-weight:800;font-size:.85rem;border-radius:999px;padding:9px 14px}
+.profile-photos{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin:0 0 18px}
+.profile-photos img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:12px;display:block}
+</style>
+<script>
+(function () {
+  var bar = document.createElement('div');
+  bar.className = 'mhg-langbar';
+  bar.setAttribute('role', 'navigation');
+  bar.setAttribute('aria-label', 'Language');
+  bar.innerHTML = '<span class="notranslate">🌐</span>' +
+    '<button type="button" class="notranslate" data-gt="ht">Kreyòl</button>' +
+    '<button type="button" class="notranslate" data-gt="fr">Français</button>' +
+    '<button type="button" class="notranslate" data-gt="es">Español</button>' +
+    '<button type="button" class="notranslate" data-gt="en">English</button>' +
+    '<div id="google_translate_element"></div>';
+  document.body.insertBefore(bar, document.body.firstChild);
+  var cur = (document.cookie.match(/googtrans=\/en\/([a-zA-Z-]+)/) || [])[1] || 'en';
+  bar.querySelectorAll('[data-gt]').forEach(function (b) {
+    b.setAttribute('aria-pressed', String(b.getAttribute('data-gt') === cur));
+    b.addEventListener('click', function () {
+      var l = b.getAttribute('data-gt'), host = location.hostname;
+      var val = l === 'en' ? '' : '/en/' + l;
+      var expire = l === 'en' ? '; expires=Thu, 01 Jan 1970 00:00:00 GMT' : '';
+      document.cookie = 'googtrans=' + val + expire + '; path=/';
+      document.cookie = 'googtrans=' + val + expire + '; path=/; domain=' + host;
+      document.cookie = 'googtrans=' + val + expire + '; path=/; domain=.' + host;
+      location.reload();
+    });
+  });
+  window.googleTranslateElementInit = function () {
+    new google.translate.TranslateElement({ pageLanguage: 'en', layout: google.translate.TranslateElement.InlineLayout.SIMPLE, autoDisplay: false }, 'google_translate_element');
+  };
+  var sc = document.createElement('script');
+  sc.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+  sc.async = true;
+  document.head.appendChild(sc);
+})();
+
+/* Every merchant profile gets the Google review banner, plus their photos when they uploaded some. */
+(function () {
+  if (typeof window.showProfile !== 'function') return;
+  var original = window.showProfile;
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  window.showProfile = function (b) {
+    original(b);
+    try {
+      var host = document.querySelector('#profileContent .profile-body > div') || document.querySelector('#profileContent .profile-body');
+      if (!host) return;
+      var url = /^https?:\/\//i.test(b.googleReviewUrl || '') ? b.googleReviewUrl
+        : 'https://www.google.com/search?q=' + encodeURIComponent((b.name || '') + ' ' + (b.city || '') + ' reviews');
+      var banner = document.createElement('div');
+      banner.className = 'gr-banner';
+      banner.innerHTML = '<div class="gr-g" aria-hidden="true">G</div><div class="gr-text"><b>Google Reviews</b><span class="gr-stars" aria-hidden="true">★★★★★</span><small>See what customers say about ' + esc(b.name) + ' on Google.</small></div>' +
+        '<a href="' + esc(url) + '" target="_blank" rel="noopener nofollow">Read or write a review</a>';
+      host.insertBefore(banner, host.firstChild);
+      if (b.dirId && b.photoCount > 0 && window.mhgDirectory) {
+        var box = document.createElement('div');
+        box.className = 'profile-photos';
+        banner.insertAdjacentElement('afterend', box);
+        window.mhgDirectory.getPhotos(b.dirId).then(function (list) {
+          list.slice(0, 2).forEach(function (src, i) {
+            if (!/^data:image\/jpeg;base64,/.test(src)) return;
+            var im = document.createElement('img');
+            im.src = src; im.alt = (b.name || 'Business') + ' photo ' + (i + 1); im.loading = 'lazy';
+            box.appendChild(im);
+          });
+          if (!box.children.length) box.remove();
+        });
+      }
+    } catch (e) { console.error(e); }
+  };
+})();
+document.addEventListener('DOMContentLoaded', function () { if (window.MHGPhotos) window.MHGPhotos.bind('bizPhotos', 'photoPreview'); });
+if (document.readyState !== 'loading' && window.MHGPhotos) window.MHGPhotos.bind('bizPhotos', 'photoPreview');
+</script>
+<!-- =================== END LANGUAGE BAR / PROFILE EXTRAS =================== -->
+
 </body>
 </html>
