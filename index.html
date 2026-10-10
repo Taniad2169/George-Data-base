@@ -319,7 +319,7 @@ footer .brand-logo{width:68px;height:68px;flex-basis:68px}
 @media(max-width:680px){.brand-logo{width:48px;height:48px;flex-basis:48px}footer .brand-logo{width:60px;height:60px;flex-basis:60px}}
 </style>
   
-<style>.hgd-video-row{display:flex;flex-wrap:wrap;gap:20px;justify-content:center}.hgd-video-card-inline{border-radius:18px;overflow:hidden;box-shadow:0 18px 40px rgba(18,140,32,.18);background:#000;max-width:440px;width:100%}.hgd-video-card-inline video{display:block;width:100%;aspect-ratio:4/3;object-fit:cover}</style><script>window.mgFirebaseReady=new Promise(function(res,rej){window.__mgResolve=res;setTimeout(function(){rej(new Error("Firebase did not load"))},20000)});window.mgFirebaseReady.catch(function(){});</script>
+<style>.hgd-video-row{display:flex;flex-wrap:wrap;gap:20px;justify-content:center}.hgd-video-card-inline{border-radius:18px;overflow:hidden;box-shadow:0 18px 40px rgba(18,140,32,.18);background:#000;max-width:440px;width:100%}.hgd-video-card-inline video{display:block;width:100%;aspect-ratio:4/3;object-fit:cover}</style><script>window.mgFirebaseReady=new Promise(function(res,rej){window.__mgResolve=res;setTimeout(function(){rej(new Error("Firebase did not load"))},20000)});window.mgFirebaseReady.catch(function(){});</script><script>window.mhgDirectoryReady=new Promise(function(res,rej){window.__mhgDirResolve=res;setTimeout(function(){rej(new Error("Directory database did not load"))},8000)});window.mhgDirectoryReady.catch(function(){});</script>
 </head>
 <body>
   <a class="skip-link" href="#directory">Skip to business directory</a>
@@ -504,7 +504,7 @@ footer .brand-logo{width:68px;height:68px;flex-basis:68px}
 
         <label>Tell us about your business</label>
         <textarea id="v-description" placeholder="What do you offer? What makes your business worth featuring?"></textarea>
-        <button type="submit">💬 Send Application via WhatsApp</button>
+        <button type="submit">Submit and continue to payment</button>
         <div class="vendor-form-msg" id="vendorFormMsg"></div>
       </form>
     </div>
@@ -618,14 +618,55 @@ footer .brand-logo{width:68px;height:68px;flex-basis:68px}
     if (description) message += 'About: ' + description + '\n';
 
     const waUrl = 'https://wa.me/' + WHATSAPP_NUMBER + '?text=' + encodeURIComponent(message);
-    window.open(waUrl, '_blank');
 
-    msgEl.textContent = 'Saved! Opening WhatsApp to send your application...';
-    msgEl.className = 'vendor-form-msg success';
-    form.reset();
-    websiteFieldWrap.style.display = 'none';
-    complianceFieldWrap.style.display = 'none';
-    otherCategoryWrap.style.display = 'none';
+    // Same record shape as the Mache Haitien Global sign-up, so Rachel and the search find both.
+    const cleanPhone = phone.replace(/[^0-9 +().-]/g, '').slice(0, 25);
+    const data = {
+      language: 'en',
+      ownerName: name.slice(0, 120),
+      businessName: business.slice(0, 160),
+      city: location.slice(0, 120),
+      industry: (category === 'Other' ? 'Other' : category).slice(0, 60),
+      industryOther: category === 'Other' ? categoryOther.slice(0, 400) : '',
+      yearsInBusiness: String(years).slice(0, 30),
+      country: country.slice(0, 60),
+      usState: /^[A-Za-z]{2}$/.test(state) ? state.toUpperCase() : '',
+      region: state.slice(0, 60),
+      address: address.slice(0, 200),
+      description: description.slice(0, 2400),
+      comments: compliance ? ('Website compliance: ' + compliance).slice(0, 2400) : '',
+      phone: cleanPhone,
+      email: email.slice(0, 120),
+      website: website.slice(0, 200),
+      source: 'george-data-base-web'
+    };
+
+    function done() {
+      form.reset();
+      websiteFieldWrap.style.display = 'none';
+      complianceFieldWrap.style.display = 'none';
+      otherCategoryWrap.style.display = 'none';
+    }
+
+    // Payment first. The business is saved to the directory only after the payment is approved.
+    if (!window.MHGPay) { window.open(waUrl, '_blank'); return; }
+    msgEl.textContent = '';
+    window.MHGPay.open({
+      lang: 'en',
+      email: email,
+      whatsapp: waUrl,
+      onPaid: async payment => {
+        await window.mhgDirectoryReady;
+        await window.mhgDirectory.save(data, payment);
+        msgEl.textContent = 'Payment approved. Your business is now in the directory.';
+        msgEl.className = 'vendor-form-msg success';
+        done();
+      },
+      beforeRedirect: async () => {
+        await window.mhgDirectoryReady;
+        return window.mhgDirectory.save(data, { status: 'pending', method: 'stripe' }, true);
+      }
+    });
   });
 })();
 </script>
@@ -736,6 +777,33 @@ async function loadApprovedBusinesses(){
     }));
     businesses=businesses.concat(mapped);
   }catch(err){ /* directory still works with existing listings if this fails */ }
+  try{
+    await window.mhgDirectoryReady;
+    const paid=await window.mhgDirectory.listPaid();
+    const have=new Set(businesses.map(b=>(b.name||'').toLowerCase()+'|'+(b.phone||'')));
+    const extra=paid.filter(r=>!have.has((r.businessName||'').toLowerCase()+'|'+(r.phone||''))).map((r,i)=>({
+      id:500000+i,
+      slug:(r.businessName||'business').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'')+'-'+String(r.id).slice(0,6).toLowerCase(),
+      name:r.businessName||'',
+      category:(r.industry==='Other'&&r.industryOther)?r.industryOther:(r.industry||'Other'),
+      secondary:[],
+      city:r.city||'',
+      region:r.region||r.usState||'',
+      country:r.country||'',
+      description:r.description||'',
+      services:[],languages:[],
+      phone:r.phone||'',
+      whatsapp:(r.phone||'').replace(/[^0-9]/g,''),
+      website:r.website||'',
+      hours:'',
+      established:new Date().getFullYear()-(parseInt(r.yearsInBusiness,10)||0),
+      mode:'In person',
+      featured:false,
+      joined:(r.created_at||new Date().toISOString()).slice(0,10),
+      reviews:[]
+    }));
+    businesses=businesses.concat(extra);
+  }catch(err){ /* shared directory not reachable; site still works */ }
 }
  const pageSize=50;
 const analyticsGroups=['Restaurant','Dentist','Lawyer','Stores & Retail','Real Estate','Beauty & Hair','Financial Services','Professional Services','Short-Term Rental','Web Designer','Web Developer','Digital Marketing Agency','Social Media Marketing','Marketing/Advertising','Software Developer','Machann Feuille','Natural Remedy','Other'];
@@ -956,6 +1024,245 @@ html{scroll-behavior:smooth}
   }
   window.addEventListener("hashchange", openRachelFromLink);
   window.addEventListener("load", function () { setTimeout(openRachelFromLink, 400); });
+})();
+</script>
+
+<!-- ===================== MHG PAYMENT STEP (Stripe-ready) =====================
+  After the vendor form is valid, this opens a payment window.
+  TEST MODE (now): a practice card form. Nothing is charged, and the card number,
+  expiration, CVC and ZIP are never saved or sent anywhere. Only "test_paid" and
+  the last 4 digits are recorded.
+  STRIPE MODE (later): set mode:'stripe' and paste George's Stripe Payment Link.
+  Card details are then typed on Stripe's own secure page, never on this site.
+============================================================================ -->
+<script>
+window.MHG_PAYMENT = {
+  mode: 'test',                 // 'test' now  ->  'stripe' once George's Stripe account is ready
+  stripePaymentLink: '',        // paste George's link here, e.g. 'https://buy.stripe.com/xxxxxxxx'
+  amountLabel: '$0.00 (test)'   // the listing price George will charge, e.g. '$49.00 one-time'
+};
+</script>
+<style>
+#mhgPay{position:fixed;inset:0;z-index:100000;display:grid;place-items:center;padding:16px;background:rgba(6,22,44,.62);overflow-y:auto}
+#mhgPay[hidden]{display:none!important}
+#mhgPay .mp-card{width:min(430px,100%);background:#fff;color:#14233a;border-radius:18px;box-shadow:0 24px 70px rgba(0,0,0,.35);padding:22px 20px 18px;font:15px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+#mhgPay h2{margin:0 0 4px;font-size:21px;line-height:1.2}
+#mhgPay .mp-sub{margin:0 0 14px;color:#4a5a70;font-size:14px}
+#mhgPay .mp-amount{display:flex;justify-content:space-between;align-items:center;gap:10px;background:#f2f6fb;border:1px solid #d9e3ef;border-radius:12px;padding:10px 14px;margin:0 0 14px;font-weight:700}
+#mhgPay .mp-test{background:#fff6d6;border:1px solid #f0d36b;color:#5a4500;border-radius:10px;padding:9px 12px;font-size:13px;margin:0 0 14px}
+#mhgPay .mp-test b{font-weight:800}
+#mhgPay label{display:block;font-size:13px;font-weight:700;margin:0 0 4px;color:#24364f}
+#mhgPay input{width:100%;box-sizing:border-box;font:16px/1.2 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;padding:12px;border:1.5px solid #c7d3e2;border-radius:10px;background:#fff;color:#14233a}
+#mhgPay input:focus{outline:none;border-color:#1a73e8;box-shadow:0 0 0 3px rgba(26,115,232,.18)}
+#mhgPay .mp-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px}
+#mhgPay .mp-field{min-width:0}
+#mhgPay .mp-err{min-height:20px;color:#b3261e;font-size:13.5px;font-weight:600;margin:10px 0 2px}
+#mhgPay .mp-actions{display:flex;gap:10px;margin-top:6px}
+#mhgPay button{font:700 16px/1 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;border-radius:12px;padding:14px 16px;cursor:pointer;border:0}
+#mhgPay .mp-pay{flex:1;background:#635bff;color:#fff}
+#mhgPay .mp-pay[disabled]{opacity:.6;cursor:wait}
+#mhgPay .mp-cancel{background:#eef2f7;color:#24364f}
+#mhgPay button:focus-visible{outline:3px solid #ffd447;outline-offset:2px}
+#mhgPay .mp-secure{margin:12px 0 0;font-size:12px;color:#5f6f84;text-align:center}
+#mhgPay .mp-ok{text-align:center}
+#mhgPay .mp-ok .mp-check{width:58px;height:58px;border-radius:50%;background:#e6f6ec;color:#1e8e3e;display:grid;place-items:center;font-size:30px;margin:4px auto 10px}
+#mhgPay .mp-wa{display:inline-block;margin-top:10px;background:#25d366;color:#05371b;text-decoration:none;font-weight:800;border-radius:12px;padding:12px 16px}
+@media (max-width:380px){#mhgPay .mp-row{grid-template-columns:1fr 1fr}#mhgPay .mp-row .mp-zip{grid-column:1/-1}}
+</style>
+<div id="mhgPay" hidden role="dialog" aria-modal="true" aria-labelledby="mpTitle">
+  <div class="mp-card" id="mpCard"></div>
+</div>
+<script>
+(function(){
+  const T = {
+    en:{title:'Complete your listing',sub:'Your business is added to the directory as soon as your payment is approved.',fee:'Listing fee',
+        test:'<b>TEST MODE.</b> Use card 4242 4242 4242 4242, any future date, any CVC and any ZIP. Card 4000 0000 0000 0002 tests a decline. Nothing is charged and card details are never saved.',
+        num:'Card number',exp:'Expiration (MM/YY)',cvc:'CVC',zip:'ZIP code',pay:'Pay and list my business',cancel:'Cancel',paying:'Processing…',
+        secure:'Payments are processed by Stripe. Card details are never stored by this website.',
+        eNum:'Please check the card number.',eExp:'Please check the expiration date.',eCvc:'Please check the CVC.',eZip:'Please enter a valid ZIP code.',
+        declined:'Your card was declined. Please try another card.',
+        stripeBtn:'Pay securely with Stripe',stripeNote:'You will finish on Stripe’s secure page, then come right back here.',
+        notSet:'Payments are not set up yet. Please try again soon.',
+        okTitle:'Payment approved!',okText:'Your business is now in the directory. Rachel and the search can find it right away.',
+        saveErr:'Your payment went through, but we could not save your listing. Please message us on WhatsApp so we can add it for you.',
+        wa:'Message us on WhatsApp',close:'Done'},
+    fr:{title:'Finalisez votre inscription',sub:'Votre entreprise est ajoutée à l’annuaire dès que le paiement est approuvé.',fee:'Frais d’inscription',
+        test:'<b>MODE TEST.</b> Carte 4242 4242 4242 4242, toute date future, tout CVC et tout code postal. La carte 4000 0000 0000 0002 teste un refus. Aucun débit, et les données de carte ne sont jamais enregistrées.',
+        num:'Numéro de carte',exp:'Expiration (MM/AA)',cvc:'CVC',zip:'Code postal',pay:'Payer et inscrire mon entreprise',cancel:'Annuler',paying:'Traitement…',
+        secure:'Les paiements sont traités par Stripe. Ce site n’enregistre jamais les données de carte.',
+        eNum:'Vérifiez le numéro de carte.',eExp:'Vérifiez la date d’expiration.',eCvc:'Vérifiez le CVC.',eZip:'Entrez un code postal valide.',
+        declined:'Votre carte a été refusée. Essayez une autre carte.',
+        stripeBtn:'Payer en toute sécurité avec Stripe',stripeNote:'Vous terminerez sur la page sécurisée de Stripe, puis vous reviendrez ici.',
+        notSet:'Les paiements ne sont pas encore activés. Réessayez bientôt.',
+        okTitle:'Paiement approuvé !',okText:'Votre entreprise est maintenant dans l’annuaire. Rachel et la recherche la trouvent tout de suite.',
+        saveErr:'Votre paiement est passé, mais l’inscription n’a pas pu être enregistrée. Écrivez-nous sur WhatsApp et nous l’ajouterons.',
+        wa:'Nous écrire sur WhatsApp',close:'Terminé'},
+    ht:{title:'Fini enskripsyon ou',sub:'Biznis ou antre nan anyè a depi peman an apwouve.',fee:'Frè enskripsyon',
+        test:'<b>MÒD TÈS.</b> Sèvi ak kat 4242 4242 4242 4242, nenpòt dat nan lavni, nenpòt CVC ak nenpòt kòd postal. Kat 4000 0000 0000 0002 teste yon refi. Yo pa chaje anyen, epi yo pa janm sere enfòmasyon kat la.',
+        num:'Nimewo kat',exp:'Ekspirasyon (MM/AA)',cvc:'CVC',zip:'Kòd postal',pay:'Peye epi mete biznis mwen',cancel:'Anile',paying:'N ap trete…',
+        secure:'Se Stripe ki trete peman yo. Sit sa a pa janm sere enfòmasyon kat.',
+        eNum:'Tanpri verifye nimewo kat la.',eExp:'Tanpri verifye dat ekspirasyon an.',eCvc:'Tanpri verifye CVC a.',eZip:'Tanpri mete yon kòd postal ki valab.',
+        declined:'Yo refize kat ou a. Tanpri eseye yon lòt kat.',
+        stripeBtn:'Peye an sekirite ak Stripe',stripeNote:'W ap fini sou paj sekirize Stripe la, epi w ap retounen isit la.',
+        notSet:'Peman yo poko pare. Tanpri eseye ankò byento.',
+        okTitle:'Peman apwouve!',okText:'Biznis ou nan anyè a kounye a. Rachel ak rechèch la ka jwenn li touswit.',
+        saveErr:'Peman ou pase, men nou pa t ka sere enskripsyon an. Tanpri ekri nou sou WhatsApp pou nou ka ajoute l pou ou.',
+        wa:'Ekri nou sou WhatsApp',close:'Fini'},
+    es:{title:'Complete su inscripción',sub:'Su negocio se agrega al directorio en cuanto se aprueba el pago.',fee:'Cuota de inscripción',
+        test:'<b>MODO DE PRUEBA.</b> Use la tarjeta 4242 4242 4242 4242, cualquier fecha futura, cualquier CVC y cualquier código postal. La tarjeta 4000 0000 0000 0002 prueba un rechazo. No se cobra nada y los datos de la tarjeta nunca se guardan.',
+        num:'Número de tarjeta',exp:'Vencimiento (MM/AA)',cvc:'CVC',zip:'Código postal',pay:'Pagar e inscribir mi negocio',cancel:'Cancelar',paying:'Procesando…',
+        secure:'Los pagos los procesa Stripe. Este sitio nunca guarda los datos de la tarjeta.',
+        eNum:'Revise el número de tarjeta.',eExp:'Revise la fecha de vencimiento.',eCvc:'Revise el CVC.',eZip:'Ingrese un código postal válido.',
+        declined:'Su tarjeta fue rechazada. Pruebe con otra tarjeta.',
+        stripeBtn:'Pagar de forma segura con Stripe',stripeNote:'Terminará en la página segura de Stripe y luego volverá aquí.',
+        notSet:'Los pagos aún no están activos. Inténtelo pronto.',
+        okTitle:'¡Pago aprobado!',okText:'Su negocio ya está en el directorio. Rachel y la búsqueda lo encuentran de inmediato.',
+        saveErr:'Su pago se realizó, pero no pudimos guardar su inscripción. Escríbanos por WhatsApp y la agregaremos.',
+        wa:'Escríbanos por WhatsApp',close:'Listo'}
+  };
+  const box = document.getElementById('mhgPay'), card = document.getElementById('mpCard');
+  let ctx = null;
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  function luhn(n){let s=0,d=false;for(let i=n.length-1;i>=0;i--){let x=+n[i];if(d){x*=2;if(x>9)x-=9}s+=x;d=!d}return s%10===0}
+  function close(){box.hidden=true;card.innerHTML='';document.body.style.overflow='';ctx=null}
+  function t(){return T[(ctx&&ctx.lang)]||T.en}
+
+  function renderTest(){
+    const L=t(),cfg=window.MHG_PAYMENT||{};
+    card.innerHTML=`<h2 id="mpTitle">${L.title}</h2><p class="mp-sub">${L.sub}</p>
+      <div class="mp-amount"><span>${L.fee}</span><span>${esc(cfg.amountLabel||'')}</span></div>
+      <div class="mp-test">${L.test}</div>
+      <form id="mpForm" novalidate>
+        <div class="mp-field"><label for="mpNum">${L.num}</label><input id="mpNum" inputmode="numeric" autocomplete="off" placeholder="4242 4242 4242 4242" maxlength="23"></div>
+        <div class="mp-row">
+          <div class="mp-field"><label for="mpExp">${L.exp}</label><input id="mpExp" inputmode="numeric" autocomplete="off" placeholder="MM/YY" maxlength="5"></div>
+          <div class="mp-field"><label for="mpCvc">${L.cvc}</label><input id="mpCvc" inputmode="numeric" autocomplete="off" placeholder="123" maxlength="4"></div>
+          <div class="mp-field mp-zip"><label for="mpZip">${L.zip}</label><input id="mpZip" autocomplete="off" placeholder="33101" maxlength="10"></div>
+        </div>
+        <div class="mp-err" id="mpErr" role="alert"></div>
+        <div class="mp-actions"><button type="button" class="mp-cancel" id="mpCancel">${L.cancel}</button><button type="submit" class="mp-pay" id="mpPay">${L.pay}</button></div>
+      </form><p class="mp-secure">🔒 ${L.secure}</p>`;
+    const num=card.querySelector('#mpNum'),exp=card.querySelector('#mpExp'),cvc=card.querySelector('#mpCvc'),zip=card.querySelector('#mpZip');
+    num.addEventListener('input',()=>{const d=num.value.replace(/\D/g,'').slice(0,19);num.value=d.replace(/(.{4})/g,'$1 ').trim()});
+    exp.addEventListener('input',()=>{let d=exp.value.replace(/\D/g,'').slice(0,4);if(d.length>2)d=d.slice(0,2)+'/'+d.slice(2);exp.value=d});
+    cvc.addEventListener('input',()=>{cvc.value=cvc.value.replace(/\D/g,'').slice(0,4)});
+    card.querySelector('#mpCancel').onclick=()=>{const c=ctx;close();c&&c.onCancel&&c.onCancel()};
+    card.querySelector('#mpForm').onsubmit=async e=>{
+      e.preventDefault();const err=card.querySelector('#mpErr');err.textContent='';
+      const n=num.value.replace(/\D/g,''),m=exp.value.match(/^(\d{2})\/(\d{2})$/),z=zip.value.trim();
+      if(n.length<13||!luhn(n)){err.textContent=L.eNum;num.focus();return}
+      let okExp=false;if(m){const mm=+m[1],yy=2000+(+m[2]);const now=new Date();okExp=mm>=1&&mm<=12&&(yy>now.getFullYear()||(yy===now.getFullYear()&&mm>=now.getMonth()+1))}
+      if(!okExp){err.textContent=L.eExp;exp.focus();return}
+      if(!/^\d{3,4}$/.test(cvc.value)){err.textContent=L.eCvc;cvc.focus();return}
+      if(!/^[A-Za-z0-9 -]{3,10}$/.test(z)){err.textContent=L.eZip;zip.focus();return}
+      const pay=card.querySelector('#mpPay');pay.disabled=true;pay.textContent=L.paying;
+      const last4=n.slice(-4),declined=n==='4000000000000002';
+      // wipe the card fields right away; nothing about the card leaves this function except the last 4 digits
+      num.value=exp.value=cvc.value=zip.value='';
+      await new Promise(r=>setTimeout(r,1200));
+      if(declined){pay.disabled=false;pay.textContent=L.pay;err.textContent=L.declined;return}
+      finish({status:'test_paid',method:'test-card',last4:last4,ref:'test_'+Date.now().toString(36),testMode:true});
+    };
+    setTimeout(()=>num.focus(),50);
+  }
+
+  function renderStripe(){
+    const L=t(),cfg=window.MHG_PAYMENT||{};
+    card.innerHTML=`<h2 id="mpTitle">${L.title}</h2><p class="mp-sub">${L.sub}</p>
+      <div class="mp-amount"><span>${L.fee}</span><span>${esc(cfg.amountLabel||'')}</span></div>
+      <div class="mp-err" id="mpErr" role="alert"></div>
+      <div class="mp-actions"><button type="button" class="mp-cancel" id="mpCancel">${L.cancel}</button><button type="button" class="mp-pay" id="mpPay">${L.stripeBtn}</button></div>
+      <p class="mp-secure">🔒 ${L.stripeNote}</p>`;
+    card.querySelector('#mpCancel').onclick=()=>{const c=ctx;close();c&&c.onCancel&&c.onCancel()};
+    card.querySelector('#mpPay').onclick=async()=>{
+      const err=card.querySelector('#mpErr');
+      if(!/^https:\/\/(buy|checkout)\.stripe\.com\//.test(cfg.stripePaymentLink||'')){err.textContent=L.notSet;return}
+      const btn=card.querySelector('#mpPay');btn.disabled=true;btn.textContent=L.paying;
+      try{
+        const ref=await ctx.beforeRedirect();   // saves the application as "payment pending" and returns its id
+        const u=new URL(cfg.stripePaymentLink);u.searchParams.set('client_reference_id',ref);if(ctx.email)u.searchParams.set('prefilled_email',ctx.email);
+        location.href=u.toString();
+      }catch(e){console.error(e);btn.disabled=false;btn.textContent=L.stripeBtn;err.textContent=L.notSet}
+    };
+  }
+
+  async function finish(payment){
+    const L=t(),c=ctx;
+    let saved=true;try{await c.onPaid(payment)}catch(e){console.error(e);saved=false}
+    card.innerHTML=`<div class="mp-ok"><div class="mp-check">✓</div><h2 id="mpTitle">${L.okTitle}</h2><p class="mp-sub">${saved?L.okText:L.saveErr}</p>
+      ${c.whatsapp?`<a class="mp-wa" href="${esc(c.whatsapp)}" target="_blank" rel="noopener">💬 ${L.wa}</a>`:''}
+      <div class="mp-actions" style="margin-top:14px"><button type="button" class="mp-pay" id="mpDone">${L.close}</button></div></div>`;
+    card.querySelector('#mpDone').onclick=close;
+  }
+
+  /* open({lang,email,whatsapp,onPaid(payment),beforeRedirect(),onCancel}) */
+  window.MHGPay={
+    open(opts){ctx=opts||{};box.hidden=false;document.body.style.overflow='hidden';
+      ((window.MHG_PAYMENT||{}).mode==='stripe'?renderStripe:renderTest)()},
+    finish:finish,
+    close:close,
+    // When Stripe sends the customer back (?mhg_paid=SESSION_ID), call this so the page can publish the listing.
+    returnedFromStripe(){const p=new URLSearchParams(location.search);return p.get('mhg_paid')||''}
+  };
+  box.addEventListener('keydown',e=>{if(e.key==='Escape'&&ctx){const c=ctx;close();c.onCancel&&c.onCancel()}});
+})();
+</script>
+<!-- =================== END MHG PAYMENT STEP =================== -->
+
+<script type="module">
+/* Shared directory database (Firebase project "mache-haitien-global").
+   Vendor sign-ups from this site and from the Mache Haitien Global form are saved here
+   after payment, so Rachel and the manual search find them on both sites. */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, doc, setDoc, writeBatch, getDocs, query, orderBy, limit, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+const dirApp = initializeApp({
+  apiKey: "AIzaSyBmVnWxX3rMOxh1LebUw2Up9nxm5C7HG8g",
+  authDomain: "mache-haitien-global.firebaseapp.com",
+  projectId: "mache-haitien-global",
+  storageBucket: "mache-haitien-global.firebasestorage.app",
+  messagingSenderId: "301352491781",
+  appId: "1:301352491781:web:42db1c2b31fe2bec48756c"
+}, "directory");
+const ddb = getFirestore(dirApp);
+function listingFrom(d, payment) {
+  return { businessName: d.businessName, industry: d.industry, industryOther: d.industryOther || '', city: d.city, country: d.country,
+    usState: d.usState || '', region: d.region || '', yearsInBusiness: d.yearsInBusiness, phone: d.phone, website: d.website || '',
+    description: d.description || '', language: d.language || 'en', source: d.source || 'george-data-base-web', status: 'published', payment: payment };
+}
+async function save(data, payment, pendingOnly) {
+  const subRef = doc(collection(ddb, 'business_submissions'));
+  const sub = Object.assign({}, data, { payment: payment, createdAt: serverTimestamp() });
+  Object.keys(sub).forEach(function (k) { if (sub[k] === '') delete sub[k]; });
+  if (pendingOnly) {
+    await setDoc(subRef, sub);
+    try { localStorage.setItem('mhgPendingListing', JSON.stringify({ id: subRef.id, data: data })); } catch (e) {}
+    return subRef.id;
+  }
+  const batch = writeBatch(ddb);
+  batch.set(subRef, sub);
+  batch.set(doc(ddb, 'business_listings', subRef.id), Object.assign(listingFrom(data, payment), { createdAt: serverTimestamp() }));
+  await batch.commit();
+  return subRef.id;
+}
+async function listPaid() {
+  const snap = await getDocs(query(collection(ddb, 'business_listings'), orderBy('createdAt', 'desc'), limit(500)));
+  return snap.docs.map(function (d) { const x = d.data(); let c = null; try { c = x.createdAt && x.createdAt.toDate ? x.createdAt.toDate().toISOString() : null; } catch (e) {} return Object.assign({ id: d.id, created_at: c }, x); });
+}
+window.mhgDirectory = { save: save, listPaid: listPaid };
+window.__mhgDirResolve(window.mhgDirectory);
+/* Back from Stripe (?mhg_paid=SESSION_ID): publish the listing that was waiting for payment. */
+(function () {
+  const session = window.MHGPay && window.MHGPay.returnedFromStripe();
+  if (!session) return;
+  let pending = null; try { pending = JSON.parse(localStorage.getItem('mhgPendingListing') || 'null'); } catch (e) {}
+  history.replaceState(null, '', location.pathname + location.hash);
+  if (!pending) return;
+  const payment = { status: 'paid', method: 'stripe', ref: String(session).slice(0, 200) };
+  window.MHGPay.open({ lang: 'en', onPaid: async function () {
+    await setDoc(doc(ddb, 'business_listings', pending.id), Object.assign(listingFrom(pending.data, payment), { createdAt: serverTimestamp() }));
+    try { localStorage.removeItem('mhgPendingListing'); } catch (e) {}
+  } });
+  window.MHGPay.finish(payment);
 })();
 </script>
 <script type="module">
