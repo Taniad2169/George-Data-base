@@ -343,6 +343,7 @@ footer .brand-logo{width:68px;height:68px;flex-basis:68px}
       <a href="#about">About</a>
       <a href="#how-it-works">How it works</a>
       <a class="owners-nav-link" href="#business-owners">Business owners click here</a>
+      <a class="app-nav-link" href="https://taniad2169.github.io/Mache-Haitien-Global-/" target="_blank" rel="noopener">📲 Get the app</a>
       <button class="admin-link" id="adminOpen" type="button">Admin</button>
     </nav>
   </header>
@@ -354,6 +355,7 @@ footer .brand-logo{width:68px;height:68px;flex-basis:68px}
         <div>
           <h1 id="searchTitle">Find Haitian businesses,<br><em>wherever you are.</em></h1>
           <p>Discover professionals, services, shops, restaurants, and stays across Haiti, the United States, Canada, and France.</p>
+          <a class="mhg-app-btn" href="https://taniad2169.github.io/Mache-Haitien-Global-/" target="_blank" rel="noopener">📲 Click here to download the app</a>
         </div>
         <div class="flag-ribbon" aria-hidden="true"><span></span><span></span><span></span></div>
       </div>
@@ -394,6 +396,7 @@ footer .brand-logo{width:68px;height:68px;flex-basis:68px}
     <p class="section-kicker">FOR BUSINESS OWNERS</p>
     <h2>Get your business in front of the community.</h2>
     <p>This directory only works if it's full of real Haitian-owned businesses. If that's you, register for free — like a Google Business Profile, your business is added to the directory as soon as you submit.</p>
+    <p class="mhg-app-wrap"><a class="mhg-app-btn" href="https://taniad2169.github.io/Mache-Haitien-Global-/" target="_blank" rel="noopener">📲 Click here to download the app</a></p>
     <div class="vendor-form">
       <h3>Register Your Business — Free</h3>
       <form id="vendorForm">
@@ -698,8 +701,37 @@ footer .brand-logo{width:68px;height:68px;flex-basis:68px}
             <input type="text" id="v-location" placeholder="e.g. Miami, Port-au-Prince, Montréal, Paris" required>
           </div>
         </div>
-        <label>Full Business Address</label>
-        <input type="text" id="v-address" placeholder="Street address, city, state, zip">
+        <label>How do you serve your customers?</label>
+        <select id="v-mode" required>
+          <option value="">Select one</option>
+          <option value="storefront">Storefront / office with a permanent address</option>
+          <option value="appointment">By appointment only</option>
+          <option value="mobile">Mobile (food truck, I come to you, no permanent address)</option>
+        </select>
+
+        <div id="addressWrap">
+          <label>Full Business Address</label>
+          <input type="text" id="v-address" placeholder="Street address, city, state, zip">
+        </div>
+
+        <label>Other cities you serve <span class="optional-tag">(up to 5, optional)</span></label>
+        <div class="cities-grid">
+          <input type="text" class="v-serveCity" maxlength="120" placeholder="City">
+          <input type="text" class="v-serveCity" maxlength="120" placeholder="City">
+          <input type="text" class="v-serveCity" maxlength="120" placeholder="City">
+          <input type="text" class="v-serveCity" maxlength="120" placeholder="City">
+          <input type="text" class="v-serveCity" maxlength="120" placeholder="City">
+        </div>
+
+        <label>WhatsApp number <span class="optional-tag">(optional, with country code)</span></label>
+        <input type="tel" id="v-whatsapp" maxlength="25" placeholder="+1 555 123 4567">
+        <p class="field-note">If you have WhatsApp, add your number so customers can message you. If not, leave it empty.</p>
+
+        <label>Are you or your business licensed?</label>
+        <div class="radio-group">
+          <label class="radio-option"><input type="radio" name="v-licensed" value="Yes" required> Yes</label>
+          <label class="radio-option"><input type="radio" name="v-licensed" value="No"> No</label>
+        </div>
 
         <label>Do you have a website?</label>
         <div class="radio-group">
@@ -797,6 +829,12 @@ footer .brand-logo{width:68px;height:68px;flex-basis:68px}
     }
   }));
 
+  document.getElementById('v-mode').addEventListener('change', function () {
+    const mobile = this.value === 'mobile';
+    document.getElementById('addressWrap').style.display = mobile ? 'none' : '';
+    if (mobile) document.getElementById('v-address').value = '';
+  });
+
   const categorySelect = document.getElementById('v-category');
   const otherCategoryWrap = document.getElementById('otherCategoryWrap');
   categorySelect.addEventListener('change', function() {
@@ -817,6 +855,12 @@ footer .brand-logo{width:68px;height:68px;flex-basis:68px}
     const state = document.getElementById('v-state').value.trim();
     const location = document.getElementById('v-location').value.trim();
     const address = document.getElementById('v-address').value.trim();
+    const serviceMode = document.getElementById('v-mode').value;
+    const serviceCities = Array.from(form.querySelectorAll('.v-serveCity')).map(i => i.value.trim()).filter(Boolean).slice(0, 5).map(c => c.slice(0, 120));
+    const whatsappNumber = document.getElementById('v-whatsapp').value.replace(/[^0-9 +().-]/g, '').trim().slice(0, 25);
+    const licensedEl = form.querySelector('input[name="v-licensed"]:checked');
+    const licensed = licensedEl ? licensedEl.value : '';
+    const modeText = { storefront: 'Storefront / office', appointment: 'By appointment only', mobile: 'Mobile (no permanent address)' }[serviceMode] || '';
     const hasWebsiteEl = form.querySelector('input[name="v-hasWebsite"]:checked');
     const hasWebsite = hasWebsiteEl ? hasWebsiteEl.value : '';
     const websiteUrlRaw = document.getElementById('v-websiteUrl').value.trim();
@@ -830,7 +874,7 @@ footer .brand-logo{width:68px;height:68px;flex-basis:68px}
     let googleReview = document.getElementById('googleReview').value.trim();
     if (googleReview && !/^https?:\/\//i.test(googleReview)) googleReview = 'https://' + googleReview;
 
-    if (!name || !business || !phone || !email || !years || !country || !location || !hasWebsite || !category) {
+    if (!name || !business || !phone || !email || !years || !country || !location || !hasWebsite || !category || !serviceMode || !licensed) {
       msgEl.textContent = 'Please fill in all required fields.';
       msgEl.className = 'vendor-form-msg error';
       return;
@@ -878,7 +922,11 @@ footer .brand-logo{width:68px;height:68px;flex-basis:68px}
     message += 'Country: ' + country + '\n';
     message += 'State/Region: ' + state + '\n';
     message += 'City: ' + location + '\n';
+    message += 'How they serve customers: ' + modeText + '\n';
     if (address) message += 'Full Address: ' + address + '\n';
+    if (serviceCities.length) message += 'Also serves: ' + serviceCities.join(', ') + '\n';
+    message += 'WhatsApp: ' + (whatsappNumber || 'None') + '\n';
+    message += 'Licensed: ' + licensed + '\n';
     message += 'Phone: ' + phone + '\n';
     message += 'Email: ' + email + '\n';
     message += 'Has Website: ' + (hasWebsite === 'yes' ? 'Yes - ' + website : 'No') + '\n';
@@ -910,6 +958,11 @@ footer .brand-logo{width:68px;height:68px;flex-basis:68px}
       website: website.slice(0, 200),
       extraNotes: extraNotes.slice(0, 1800),
       googleReviewUrl: googleReview.slice(0, 300),
+      hasWhatsapp: whatsappNumber ? 'Yes' : 'No',
+      whatsappNumber: /^[0-9 +().-]{7,25}$/.test(whatsappNumber) ? whatsappNumber : '',
+      serviceCities: serviceCities,
+      serviceMode: serviceMode,
+      licensed: licensed,
       source: 'george-data-base-web'
     };
 
@@ -920,6 +973,7 @@ footer .brand-logo{width:68px;height:68px;flex-basis:68px}
       websiteFieldWrap.style.display = 'none';
       complianceFieldWrap.style.display = 'none';
       otherCategoryWrap.style.display = 'none';
+      document.getElementById('addressWrap').style.display = '';
     }
 
     // Free registration: the business is saved to the directory database right away (no payment).
@@ -937,9 +991,10 @@ footer .brand-logo{width:68px;height:68px;flex-basis:68px}
             businesses.push({ id: 600000 + businesses.length, slug: data.businessName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') + '-' + String(newId).slice(0, 6).toLowerCase(),
               name: data.businessName, category: (data.industry === 'Other' && data.industryOther) ? data.industryOther : data.industry, secondary: [],
               city: data.city, region: data.region || data.usState || '', country: data.country, description: data.description || '', services: [], languages: [],
-              phone: data.phone, whatsapp: (data.phone || '').replace(/[^0-9]/g, ''), website: data.website || '', googleReviewUrl: data.googleReviewUrl || '',
+              phone: data.phone, whatsapp: (data.whatsappNumber || data.phone || '').replace(/[^0-9]/g, ''), website: data.website || '', googleReviewUrl: data.googleReviewUrl || '',
+              serviceCities: data.serviceCities || [], serviceMode: data.serviceMode || '', licensed: data.licensed || '',
               dirId: newId, photoCount: (window.MHGPhotos ? window.MHGPhotos.get().length : 0), hours: '', established: new Date().getFullYear(),
-              mode: 'In person', featured: false, joined: new Date().toISOString().slice(0, 10), reviews: [] });
+              mode: ({ storefront: 'In person', appointment: 'By appointment only', mobile: 'Mobile (comes to you)' })[data.serviceMode] || 'In person', featured: false, joined: new Date().toISOString().slice(0, 10), reviews: [] });
             if (typeof render === 'function') render();
           }
         } catch (e) { console.warn(e); }
@@ -1095,14 +1150,17 @@ async function loadApprovedBusinesses(){
       description:r.description||'',
       services:[],languages:[],
       phone:r.phone||'',
-      whatsapp:(r.phone||'').replace(/[^0-9]/g,''),
+      whatsapp:(r.whatsappNumber||r.phone||'').replace(/[^0-9]/g,''),
       website:r.website||'',
       googleReviewUrl:r.googleReviewUrl||'',
+      serviceCities:Array.isArray(r.serviceCities)?r.serviceCities:[],
+      serviceMode:r.serviceMode||'',
+      licensed:r.licensed||'',
       dirId:r.id,
       photoCount:r.photoCount||0,
       hours:'',
       established:new Date().getFullYear()-(parseInt(r.yearsInBusiness,10)||0),
-      mode:'In person',
+      mode:({storefront:'In person',appointment:'By appointment only',mobile:'Mobile (comes to you)'})[r.serviceMode]||'In person',
       featured:false,
       joined:(r.created_at||new Date().toISOString()).slice(0,10),
       reviews:[]
@@ -1533,7 +1591,9 @@ function listingFrom(d, payment) {
   return { businessName: d.businessName, industry: d.industry, industryOther: d.industryOther || '', city: d.city, country: d.country,
     usState: d.usState || '', region: d.region || '', yearsInBusiness: d.yearsInBusiness, phone: d.phone, website: d.website || '',
     description: d.description || '', language: d.language || 'en', source: d.source || 'george-data-base-web',
-    googleReviewUrl: d.googleReviewUrl || '', photoCount: d.photoCount || 0, status: 'published', payment: payment };
+    googleReviewUrl: d.googleReviewUrl || '', photoCount: d.photoCount || 0,
+    whatsappNumber: d.whatsappNumber || '', serviceCities: d.serviceCities || [], serviceMode: d.serviceMode || '', licensed: d.licensed || '',
+    status: 'published', payment: payment };
 }
 async function save(data, payment, pendingOnly) {
   const photos = (window.MHGPhotos && window.MHGPhotos.get()) || [];
@@ -1546,11 +1606,18 @@ async function save(data, payment, pendingOnly) {
     try { localStorage.setItem('mhgPendingListing', JSON.stringify({ id: subRef.id, data: data, photos: photos })); } catch (e) {}
     return subRef.id;
   }
-  const batch = writeBatch(ddb);
-  batch.set(subRef, sub);
-  batch.set(doc(ddb, 'business_listings', subRef.id), Object.assign(listingFrom(data, payment), { createdAt: serverTimestamp() }));
-  if (photos.length) batch.set(doc(ddb, 'listing_photos', subRef.id), { photos: photos, createdAt: serverTimestamp() });
-  await batch.commit();
+  const NEW = ['whatsappNumber', 'serviceCities', 'serviceMode', 'licensed'];
+  const strip = function (o) { const c = Object.assign({}, o); NEW.forEach(function (k) { delete c[k]; }); return c; };
+  async function write(lean) {
+    const batch = writeBatch(ddb);
+    const pub = Object.assign(listingFrom(data, payment), { createdAt: serverTimestamp() });
+    batch.set(subRef, lean ? strip(sub) : sub);
+    batch.set(doc(ddb, 'business_listings', subRef.id), lean ? strip(pub) : pub);
+    if (photos.length) batch.set(doc(ddb, 'listing_photos', subRef.id), { photos: photos, createdAt: serverTimestamp() });
+    await batch.commit();
+  }
+  try { await write(false); }
+  catch (e) { if (e && e.code === 'permission-denied') await write(true); else throw e; } // older rules: save without the new questions
   return subRef.id;
 }
 async function listPaid() {
@@ -1958,6 +2025,13 @@ if (document.readyState !== 'loading' && window.MHGPhotos) window.MHGPhotos.bind
 .vendor-form input,.vendor-form select,.vendor-form textarea{font-size:16px!important}
 .vendor-form button[type=submit]{font-size:1.1rem!important}
 .owners-nav-link{background:#04541e;color:#fff!important;border-radius:999px;padding:6px 14px;font-weight:800}
+.app-nav-link{background:#f0e813;color:#142219!important;border-radius:999px;padding:6px 14px;font-weight:800}
+.mhg-app-btn{display:inline-block;margin-top:14px;background:#f0e813;color:#142219!important;font-weight:900;font-size:1.05rem;border-radius:999px;padding:13px 22px;text-decoration:none;box-shadow:0 8px 22px rgba(0,0,0,.18)}
+.mhg-app-btn:hover{background:#e3dc0f}
+.mhg-app-wrap{text-align:center;margin:0 0 22px}
+.vendor-form .cities-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.vendor-form .cities-grid input:last-child{grid-column:1/-1}
+.vendor-form .field-note{font-size:.85rem;color:#4b5b50;margin:6px 0 0}
 .mhg-feat-top{position:relative;display:flex;align-items:center;gap:12px;padding:14px 16px;min-height:96px;background:linear-gradient(135deg,#04541e,#0a7a30)}
 .mhg-feat-top img{width:72px;height:72px;border-radius:50%;object-fit:cover;border:3px solid #fff}
 .mhg-feat-top img.mhg-feat-logo{width:auto;height:46px;border-radius:8px;border:0;background:#fff;padding:3px}
@@ -2001,11 +2075,13 @@ if (document.readyState !== 'loading' && window.MHGPhotos) window.MHGPhotos.bind
       var base = origFiltered();
       var q = (state.query || '').toLowerCase(), loc = (state.location || '').toLowerCase();
       var extra = businesses.filter(function (b) {
-        if (!b.featured || base.indexOf(b) >= 0) return false;
+        if (base.indexOf(b) >= 0) return false;
+        var served = b.serviceCities || [];
+        if (!b.featured && !(loc && served.length)) return false;
         var catOK = !state.category || (function () { var g = expandCategoryMatch(state.category); return g.indexOf(b.category) >= 0 || b.secondary.some(function (s) { return g.indexOf(s) >= 0; }); })();
         var qOK = !q || [b.name, b.category, b.description].concat(b.services, b.secondary).join(' ').toLowerCase().indexOf(q) >= 0;
         var countryOK = !state.country || b.anyCountry || b.country === state.country;
-        var locOK = !loc || b.anyCountry || [b.city, b.region].concat(b.areas || []).join(' ').toLowerCase().indexOf(loc) >= 0;
+        var locOK = !loc || b.anyCountry || [b.city, b.region].concat(b.areas || [], served).join(' ').toLowerCase().indexOf(loc) >= 0;
         return catOK && qOK && countryOK && locOK;
       });
       return extra.concat(base);
@@ -2023,6 +2099,14 @@ if (document.readyState !== 'loading' && window.MHGPhotos) window.MHGPhotos.bind
   if (typeof origShow === 'function') {
     window.showProfile = function (b) {
       origShow(b);
+      var facts = document.querySelector('#profileContent .profile-facts');
+      if (facts && !b.contact) {
+        var bits = '';
+        if (b.serviceCities && b.serviceCities.length) bits += '<div><small>Also serves</small><b>' + b.serviceCities.map(esc).join(', ') + '</b></div>';
+        if (b.licensed) bits += '<div><small>Licensed</small><b>' + (b.licensed === 'Yes' ? '✅ Yes' : 'No') + '</b></div>';
+        var act = facts.querySelector('.profile-actions');
+        if (bits) { if (act) act.insertAdjacentHTML('beforebegin', bits); else facts.insertAdjacentHTML('beforeend', bits); }
+      }
       if (!b.contact) return;
       var head = document.querySelector('#profileContent .profile-head');
       if (head && b.photo) head.insertAdjacentHTML('afterbegin', '<div class="mhg-prof-imgs"><img src="' + b.photo + '" alt="Tania Domingue"><img class="mhg-prof-logo" src="' + b.logo + '" alt="The WebSwan logo"></div>');
