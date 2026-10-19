@@ -1986,7 +1986,9 @@ if (document.readyState !== 'loading' && window.MHGPhotos) window.MHGPhotos.bind
   /* 1) "Business owners click here" links (#business-owners) slide smoothly to the green form */
   function slideToOwners() {
     var t = document.getElementById('business-owners'); if (!t) return;
+    var y0 = window.scrollY;
     t.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    setTimeout(function () { if (Math.abs(window.scrollY - y0) < 2 && Math.abs(t.getBoundingClientRect().top) > 20) t.scrollIntoView({ block: 'start' }); }, 1200);
   }
   window.addEventListener('hashchange', function () { if (location.hash === '#business-owners') slideToOwners(); });
   window.addEventListener('load', function () { if (location.hash === '#business-owners') { window.scrollTo(0, 0); setTimeout(slideToOwners, 700); } });
